@@ -1,0 +1,322 @@
+<!DOCTYPE html> 
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">
+    <title>Sales</title>
+   
+</head>
+
+<body>
+    <%- include('../layouts/navbar', { admin: admin }); -%>
+
+    <%- include('../layouts/sidebar'); -%>
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-1"><i class="bi bi-cart"></i> Sales</h1>
+            <button class="btn btn-add-sale" data-bs-toggle="modal" data-bs-target="#addSaleModal">+ New Sales</button>
+        </div>
+    
+        <!-- Divider Line -->
+        <hr>
+    
+        <!-- Search Bar and Pagination -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <!-- Search Bar -->
+            <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter sale ID or customer name" aria-label="Sale Search">
+                    <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
+                </div>
+            </div>
+    
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    
+
+        <table class="table table-bordered sales-table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Date</th>
+                    <th>Customer Address</th>
+                    <th>Contact Number</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th> <!-- New Total Price Column -->
+                    <th>Payment Method</th>
+                    <th>Installment Months</th>
+                    <th>Amount Paid</th>
+                    <th>Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sales.forEach(function(sale) { %>
+                <tr data-id="<%= sale.SaleID %>">
+                    <td class="customer-name"><%= sale.CusName %></td>
+                    <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
+                    <td class="customer-address"><%= sale.CusAdd %></td>
+                    <td class="contact-number"><%= sale.CusContact %></td>
+                    <td class="product-id"><%= sale.ProductID %></td> <!-- Assuming ProductID is a Number -->
+                    <td class="product-name"><%= sale.ProductName %></td>
+                    <td class="quantity"><%= sale.Quantity %></td>
+                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td> <!-- Use TotalPrice directly from the database -->
+                    <td class="payment-method"><%= sale.MethPay %></td>
+                    <td class="installment-months"><%= sale.NumMonths !== null ? sale.NumMonths : 'N/A' %></td>
+                    <td class="amount-paid"><%= sale.AmountPayment.toFixed(2) %></td>
+                    <td class="balance"><%= sale.Balance !== null ? sale.Balance.toFixed(2) : '0.00' %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSaleModal" onclick="editSale('<%= sale.SaleID %>')" title="Edit Sale">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDeleteSale('<%= sale.SaleID %>')" title="Delete Sale">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
+        
+    </div>
+
+   <!-- Add Sale Modal -->
+<div class="modal fade" id="addSaleModal" tabindex="-1" aria-labelledby="addSaleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSaleModalLabel">Add New Sale</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSaleForm">
+                    <div class="mb-3">
+                        <label for="cusName" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="cusName" name="CusName" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="Date" value="<%= new Date().toISOString().split('T')[0] %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cusAdd" class="form-label">Customer Address</label>
+                        <input type="text" class="form-control" id="cusAdd" name="CusAdd" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cusContact" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="cusContact" name="CusContact" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categorySelect" class="form-label">Product Category</label>
+                        <select class="form-select mt-2" id="categorySelect" name="ProductCategory" required>
+                            <option value="">Select a Category</option>
+                            <!-- Categories will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productSelect" class="form-label">Product Name</label>
+                        <select class="form-select mt-2" id="productSelect" name="ProductID" required>
+                            <option value="">Select a Product</option>
+                            <!-- Products will be populated based on the selected category -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="Quantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select" id="paymentMethod" name="MethPay" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Installment">Installment</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="installmentSection" style="display: none;">
+                        <label for="numMonths" class="form-label">Installment Months</label>
+                        <input type="number" class="form-control" id="numMonths" name="NumMonths"> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="totalPrice" class="form-label">Total Price</label>
+                        <input type="number" class="form-control" id="totalPrice" name="TotalPrice" readonly>
+                    </div>
+                    
+                    <div class="mb-3" id="amountPaidSection">
+                        <label for="amountPayment" class="form-label">Amount Paid</label>
+                        <input type="number" class="form-control" id="amountPayment" name="AmountPayment" required>
+                    </div>
+                    <div class="mb-3" id="balanceSection">
+                        <label for="balance" class="form-label">Balance</label>
+                        <input type="number" class="form-control" id="balance" name="Balance" readonly>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Sale</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Edit Sale Modal -->
+    <div class="modal fade" id="editSaleModal" tabindex="-1" aria-labelledby="editSaleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSaleModalLabel">Edit Sale</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editSaleForm">
+                        <!-- Form fields similar to Add Sale Modal, with values populated for editing -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Logout Confirmation Modal -->
+     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/admin/logout" class="btn btn-danger">Yes, Logout</a> <!-- Redirect to login page -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap and FontAwesome JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        //sidebar hamburger button
+        // Toggle sidebar on small screens
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hide');
+        }
+
+
+        //fetching categories inside the modal sales
+
+        async function fetchCategories() {
+            const response = await fetch('/admin/api/categories');
+            const categories = await response.json();
+            const categorySelect = document.getElementById('categorySelect');
+
+            // Clear existing options
+            categorySelect.innerHTML = '<option value="">Select a Category</option>';
+
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category._id; // Assuming each category has an _id field
+                option.textContent = category.CategoryName; // Assuming each category has a name field
+                categorySelect.appendChild(option);
+            });
+        }
+
+
+// Fetch products based on selected category
+async function fetchProductsByCategory(categoryId) {
+    if (!categoryId) {
+        return; // Exit if no category is selected
+    }
+
+    console.log("Fetching products for categoryId:", categoryId); // Debug line
+
+    try {
+        const response = await fetch(`/admin/api/products?categoryId=${categoryId}`);
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const products = await response.json();
+        
+        const productSelect = document.getElementById('productSelect');
+        productSelect.innerHTML = ''; // Clear previous options
+
+        // Populate product select dropdown with fetched products
+        products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.ProductID; // Assuming each product has a ProductID field
+            option.textContent = product.ProductName; // Assuming each product has a ProductName field
+            productSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+}
+
+// Event listener for category selection
+const categorySelect = document.getElementById('categorySelect');
+categorySelect.addEventListener('change', async (event) => {
+    const selectedCategoryId = event.target.value; // Get the selected category ID
+    await fetchProductsByCategory(selectedCategoryId); // Fetch products for the selected category
+});
+
+
+
+//add sales function
+
+
+
+
+
+// Event listener for when the modal opens
+$('#addSaleModal').on('show.bs.modal', function () {
+    // Fetch categories when modal opens
+    fetchCategories();
+});
+
+        
+
+
+    </script>
+    
+    
+</body>
+
+</html>

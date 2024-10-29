@@ -1,0 +1,17 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand text-white" href="#">
+        <img src="/images/gmercado'slogo.png" alt="Logo"> G. Mercado's Marketing
+    </a>
+    <span class="navbar-text">
+        <% if (employee) { %>
+            Hello, <strong><%= employee.Username %>!</strong>
+        <% } else { %>
+            Hello, <strong>Guest!</strong>
+        <% } %>
+    </span>
+    
+    <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+        <span class="fas fa-bars"></span>
+    </button>
+</nav>

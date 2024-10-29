@@ -1,0 +1,97 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.navbar {
+    background-color: rgb(67, 100, 67);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.sidebar {
+    min-width: 250px;
+    background-color: #f0f0f0;
+    padding: 15px;
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+}
+
+.sidebar.hide {
+    transform: translateX(-100%);
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #e2e6ea;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 10px;
+    margin-left: 250px;
+    margin-top: 56px;
+    background-color: rgb(255, 255, 255);
+    overflow-y: auto;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        min-width: 100%;
+        height: auto;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+
+.product-table th,
+.product-table td {
+    text-align: center;
+}
+
+.product-table th {
+    background-color: #7b62c3;
+    color: white;
+}
+
+.product-table td {
+    padding: 8px;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.btn-view-entries {
+    background-color: #f6bb42;
+    color: white;
+    border: none;
+}
+
+.btn-add-product {
+    background-color: #5e775e;
+    color: white;
+    border: none;
+}

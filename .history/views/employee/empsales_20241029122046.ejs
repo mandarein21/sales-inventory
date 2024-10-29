@@ -1,0 +1,147 @@
+<!DOCTYPE html> 
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">    
+    <title>Sales</title>
+   
+</head>
+
+<body>
+    <%- include('../layouts/empnavbar', { employee: employee }); -%>
+
+
+    <%- include('../layouts/empsidebar'); -%>
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-1"><i class="bi bi-cart"></i> Sales</h1>
+            
+        </div>
+    
+        <!-- Divider Line -->
+        <hr>
+    
+        <!-- Search Bar and Pagination -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <!-- Search Bar -->
+            <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter sale ID or customer name" aria-label="Sale Search">
+                    <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
+                </div>
+            </div>
+    
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    
+
+        <table class="table table-bordered sales-table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Date</th>
+                    <th>Customer Address</th>
+                    <th>Contact Number</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th> <!-- New Total Price Column -->
+                    <th>Payment Method</th>
+                    <th>Installment Months</th>
+                    <th>Amount Paid</th>
+                    <th>Balance</th>
+                
+                </tr>
+            </thead>
+            <tbody>
+                <% sales.forEach(function(sale) { %>
+                <tr data-id="<%= sale.SaleID %>">
+                    <td class="customer-name"><%= sale.CusName %></td>
+                    <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
+                    <td class="customer-address"><%= sale.CusAdd %></td>
+                    <td class="contact-number"><%= sale.CusContact %></td>
+                    <td class="product-id"><%= sale.ProductID %></td> <!-- Assuming ProductID is a Number -->
+                    <td class="product-name"><%= sale.ProductName %></td>
+                    <td class="quantity"><%= sale.Quantity %></td>
+                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td> <!-- Use TotalPrice directly from the database -->
+                    <td class="payment-method"><%= sale.MethPay %></td>
+                    <td class="installment-months"><%= sale.NumMonths !== null ? sale.NumMonths : 'N/A' %></td>
+                    <td class="amount-paid"><%= sale.AmountPayment.toFixed(2) %></td>
+                    <td class="balance"><%= sale.Balance !== null ? sale.Balance.toFixed(2) : '0.00' %></td>
+                    
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    
+
+     <!-- Logout Confirmation Modal -->
+     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/admin/logout" class="btn btn-danger">Yes, Logout</a> <!-- Redirect to login page -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap and FontAwesome JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            sidebar.classList.add('hide');
+            document.querySelector('.content').style.marginLeft = '0'; // Adjust content margin
+        } else {
+            sidebar.classList.remove('hide');
+            sidebar.classList.add('show');
+            document.querySelector('.content').style.marginLeft = '250px'; // Restore content margin
+        }
+    }
+
+      
+    </script>
+</body>
+
+</html>

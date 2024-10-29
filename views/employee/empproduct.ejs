@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">
+    <title>Products</title>
+    
+</head>
+
+<body>
+    <%- include('../layouts/empnavbar', { employee: employee }); -%>
+
+
+    <%- include('../layouts/empsidebar'); -%>
+
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-1"><i class="bi bi-boxes"></i> Products</h1>
+           
+        </div>
+        
+        <!-- Divider Line -->
+        <hr>
+    
+        <!-- Search Bar and Pagination -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <!-- Search Bar -->
+            <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter product name or category" aria-label="Product Code">
+                    <button class="btn btn-primary" id="searchBtn" type="button" style="white-space: nowrap;">Search</button>
+                </div>
+            </div>
+    
+            <!-- Pagination -->
+           <!-- Pagination -->
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination mb-0">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+        </div>
+
+        <table class="table table-bordered product-table">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(function(product) { %>
+                <tr data-id="<%= product.ProductID %>">
+                    <td><%= product.ProductID %></td>
+                    <td class="product-name"><%= product.ProductName %></td>
+                    <td class="category-id"><%= product.CategoryID ? product.CategoryID._id : 'N/A' %></td> <!-- Display Category ID -->
+                    <td class="category-name"><%= product.CategoryID ? product.CategoryID.CategoryName : 'Unknown' %></td> <!-- Display Category Name -->            
+                    <td class="quantity"><%= product.Quantity %></td>
+                    <td class="price"><%= product.Price.toFixed(2) %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
+    </div>
+
+    
+
+     <!-- Logout Confirmation Modal -->
+     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/admin/logout" class="btn btn-danger">Yes, Logout</a> <!-- Redirect to login page -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle sidebar on small screens
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hide');
+        }
+
+      
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function () {
+            // Reset the modal form fields if needed
+            modal.querySelectorAll('form').forEach(form => form.reset());
+
+            // Remove the backdrop to ensure interactions with the page
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open');  // Remove any leftover classes
+            document.body.style = '';  // Clear any inline styles added by Bootstrap
+        });
+    });
+});
+
+
+
+// Function to filter table rows based on input
+function filterTable() {
+        let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+        let tableRows = document.querySelectorAll('.product-table tbody tr');
+
+        tableRows.forEach(function (row) {
+            let productName = row.querySelector('.product-name').textContent.toLowerCase();
+            let category = row.querySelector('.category').textContent.toLowerCase();
+            let productId = row.querySelector('td:first-child').textContent.toLowerCase(); // Product ID
+            
+            // Check if input is empty, show all rows if true
+            if (searchInput === "") {
+                row.style.display = ''; // Show all rows if input is empty
+            } else {
+                // Hide or show rows based on search input
+                if (productName.includes(searchInput) || category.includes(searchInput) || productId.includes(searchInput)) {
+                    row.style.display = ''; // Show row if it matches
+                } else {
+                    row.style.display = 'none'; // Hide row if it doesn't match
+                }
+            }
+        });
+    }
+
+    // Add event listener to the search button
+    document.getElementById('searchBtn').addEventListener('click', filterTable);
+
+    // Add search functionality when user presses 'Enter' or types in the search input field
+    document.querySelector('.search-bar input').addEventListener('keyup', function (event) {
+        filterTable(); // Trigger filtering on each keyup event (for dynamic filtering)
+    });
+
+
+
+    </script>
+<script src="/public/images/js/product.js"></script>
+
+</body>
+
+</html>

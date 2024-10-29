@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">
+    <title>Products</title>
+    
+</head>
+
+<body>
+    <%- include('layouts/navbar', { admin: admin }); -%>
+
+    <%- include('layouts/sidebar'); -%>
+
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-1"><i class="bi bi-boxes"></i> Products</h1>
+            <button class="btn btn-add-product" data-bs-toggle="modal" data-bs-target="#addProductModal">+ Add Product</button>
+        </div>
+        
+        <!-- Divider Line -->
+        <hr>
+    
+        <!-- Search Bar and Pagination -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <!-- Search Bar -->
+            <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter product name or category" aria-label="Product Code">
+                    <button class="btn btn-primary" id="searchBtn" type="button" style="white-space: nowrap;">Search</button>
+                </div>
+            </div>
+    
+            <!-- Pagination -->
+           <!-- Pagination -->
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination mb-0">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+        </div>
+
+        <table class="table table-bordered product-table">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(function(product) { %>
+                <tr data-id="<%= product.ProductID %>">
+                    <td><%= product.ProductID %></td>
+                    <td class="product-name"><%= product.ProductName %></td>
+                    <td class="category-id"><%= product.CategoryID ? product.CategoryID._id : 'N/A' %></td> <!-- Display Category ID -->
+                    <td class="category-name"><%= product.CategoryID ? product.CategoryID.CategoryName : 'Unknown' %></td> <!-- Display Category Name -->            
+                    <td class="quantity"><%= product.Quantity %></td>
+                    <td class="price"><%= product.Price.toFixed(2) %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-product-btn" data-product-id="<%= product.ProductID %>" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDeleteProduct('<%= product.ProductID %>')">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                    
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
+        
+    </div>
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label for="productId" class="form-label">Product ID</label>
+                        <input type="text" class="form-control" id="productId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categorySelect" class="form-label">Category</label>
+                        <select class="form-select" id="categorySelect" required>
+                            <option value="" disabled selected>Select a category</option>
+                            <!-- Categories will be populated here -->
+                        </select>
+                        
+                        
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="price" required step="0.01"> <!-- Step added for decimal input -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Edit Product Modal -->
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <div class="mb-3">
+                        <label for="editProductId" class="form-label">Product ID</label>
+                        <input type="text" class="form-control" id="editProductId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="editProductName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategorySelect" class="form-label">Category</label>
+                        <select id="editCategorySelect" class="form-control">
+                            <option value="" disabled selected>Select a category</option>
+                            <!-- Categories will be populated here -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editQuantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="editQuantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="editPrice" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="updateProductBtn">Update Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+     <!-- Logout Confirmation Modal -->
+     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/admin/logout" class="btn btn-danger">Yes, Logout</a> <!-- Redirect to login page -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle sidebar on small screens
+ // Toggle sidebar on small screens
+ function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hide');
+        }
+     
+     //add product
+
+     // Fetch Categories and Populate Select
+async function fetchCategories(selectElementId, selectedCategoryId = null) {
+    try {
+        const response = await fetch('/admin/api/categories'); // Ensure this URL is correct
+        if (!response.ok) throw new Error('Failed to fetch categories'); // Check if the response is OK
+        const categories = await response.json();
+        const categorySelect = document.getElementById('categorySelect');
+        
+        // Clear existing options
+        categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
+        
+        // Populate categories
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category._id; // Assuming each category has an _id field
+            option.textContent = category.CategoryName; // Assuming each category has a name field
+            categorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+    }
+}
+
+
+// Populate categories when the modal is shown
+document.getElementById('addProductModal').addEventListener('show.bs.modal', () => {
+    fetchCategories('categorySelect');
+});
+
+// Handle product submission
+document.getElementById('saveProductBtn').addEventListener('click', async function () {
+    const newProduct = {
+        ProductID: document.getElementById('productId').value,
+        ProductName: document.getElementById('productName').value,
+        CategoryID: document.getElementById('categorySelect').value,
+        Quantity: parseInt(document.getElementById('quantity').value, 10),
+        Price: parseFloat(document.getElementById('price').value),
+    };
+
+    // Validate input fields
+    if (!newProduct.ProductID || !newProduct.ProductName || !newProduct.CategoryID || isNaN(newProduct.Quantity) || isNaN(newProduct.Price)) {
+        alert('Please fill in all fields correctly.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/add-product', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProduct),
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        console.log('Product added successfully:', data);
+        alert('Product added successfully!');
+
+        // Close the modal with Bootstrap’s Modal API (if jQuery not used)
+        const addProductModal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+        addProductModal.hide();
+
+        // Refresh the page or update the product list without reloading if possible
+        location.reload();
+    } catch (error) {
+        console.error('Error adding product:', error);
+        alert('An error occurred while adding the product.');
+    }
+});
+
+
+
+
+
+
+
+//edit product
+function openEditModal(productId) {
+    fetch(`/admin/products/${productId}`)  // This should match the route in backend
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch product data');
+            return response.json();
+        })
+        .then(product => {
+            console.log('Product data fetched:', product); // Verify product data in the console
+
+            document.getElementById('editProductId').value = product.ProductID;
+            document.getElementById('editProductName').value = product.ProductName;
+            document.getElementById('editQuantity').value = product.Quantity;
+            document.getElementById('editPrice').value = product.Price.toFixed(2);
+
+            editfetchCategories('editCategorySelect', product.CategoryID);
+        })
+        .catch(error => {
+            console.error('Error fetching product data:', error);
+            alert('Error loading product details.');
+        });
+}
+
+
+async function fetchProductDetails(productId) {
+    try {
+        const response = await fetch(`/admin/products/${productId}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const product = await response.json();
+
+        document.getElementById('editProductId').value = product.ProductID;
+        document.getElementById('editProductName').value = product.ProductName;
+        document.getElementById('editQuantity').value = product.Quantity;
+        document.getElementById('editPrice').value = product.Price.toFixed(2);
+
+        // Fetch categories and set the selected category
+        await editfetchCategories('editCategorySelect', product.CategoryID); // Ensure CategoryID is correct
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        alert('Error loading product details. Please try again later.');
+    }
+}
+
+async function editfetchCategories(selectElementId, selectedCategoryId = null) {
+    try {
+        const response = await fetch('/admin/api/categories');
+        if (!response.ok) throw new Error('Failed to fetch categories');
+
+        const categories = await response.json();
+        console.log('Fetched categories:', categories); // Log categories to see if they are fetched correctly
+        const editCategorySelect = document.getElementById(selectElementId);
+        editCategorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category._id; // Ensure this is correct
+            option.textContent = category.CategoryName; // Ensure this is correct
+
+            if (selectedCategoryId && category.CategoryID === selectedCategoryId) { // Check if IDs match
+                option.selected = true;
+            }
+            editCategorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+    }
+}
+
+
+// Event listener for opening the Edit Product modal
+document.querySelectorAll('.edit-product-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const productId = button.getAttribute('data-product-id');
+        console.log('Opening edit modal for product ID:', productId); // Log product ID for debugging
+        fetchProductDetails(productId); // Fetch and populate the product details
+    });
+});
+
+
+
+
+
+document.getElementById('updateProductBtn').addEventListener('click', function() {
+    const productId = document.getElementById('editProductId').value;
+    const updatedProduct = {
+        ProductName: document.getElementById('editProductName').value,
+        // Do not convert CategoryID to Number; keep it as a string (ObjectId)
+        CategoryID: document.getElementById('editCategorySelect').value, // Keep as is
+        Quantity: parseInt(document.getElementById('editQuantity').value, 10),
+        Price: parseFloat(document.getElementById('editPrice').value),
+    };
+
+    // Check if CategoryID is valid before sending
+    if (!updatedProduct.CategoryID) {
+        console.error('CategoryID is not valid.');
+        return;
+    }
+
+    // Send a PUT request to update the product
+    fetch(`/products/update/${productId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProduct),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Product updated successfully:', data); // Log the successful update
+        location.reload(); // Refresh the page or update the UI accordingly
+    })
+    .catch(error => {
+        console.error('Error updating product:', error);
+    });
+});
+
+
+
+
+
+
+function confirmDeleteProduct(productId) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        fetch(`/admin/api/products/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Product deleted successfully!');
+                location.reload(); // Reload to update the product list
+            } else {
+                alert('Error deleting product!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the product.');
+        });
+    }
+}
+
+
+
+
+
+
+// Resetting modals
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function () {
+            // Reset the modal form fields if needed
+            modal.querySelectorAll('form').forEach(form => form.reset());
+
+            // Remove the backdrop to ensure interactions with the page
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        });
+    });
+});
+
+
+
+// Function to filter table rows based on input
+function filterTable() {
+        let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+        let tableRows = document.querySelectorAll('.product-table tbody tr');
+
+        tableRows.forEach(function (row) {
+            let productName = row.querySelector('.product-name').textContent.toLowerCase();
+            let category = row.querySelector('.category').textContent.toLowerCase();
+            let productId = row.querySelector('td:first-child').textContent.toLowerCase(); // Product ID
+            
+            // Check if input is empty, show all rows if true
+            if (searchInput === "") {
+                row.style.display = ''; // Show all rows if input is empty
+            } else {
+                // Hide or show rows based on search input
+                if (productName.includes(searchInput) || category.includes(searchInput) || productId.includes(searchInput)) {
+                    row.style.display = ''; // Show row if it matches
+                } else {
+                    row.style.display = 'none'; // Hide row if it doesn't match
+                }
+            }
+        });
+    }
+
+    // Add event listener to the search button
+    document.getElementById('searchBtn').addEventListener('click', filterTable);
+
+    // Add search functionality when user presses 'Enter' or types in the search input field
+    document.querySelector('.search-bar input').addEventListener('keyup', function (event) {
+        filterTable(); // Trigger filtering on each keyup event (for dynamic filtering)
+    });
+
+
+    </script>
+
+
+</body>
+
+</html>

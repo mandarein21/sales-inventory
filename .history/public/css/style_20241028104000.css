@@ -1,0 +1,196 @@
+/* General Styles */
+body {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa; /* Light background for all pages */
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: rgb(67, 100, 67);
+    color: white;
+    padding: 0.5rem 1.5rem; /* Slightly larger padding for better spacing */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1rem; /* Increased size for better visibility */
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-right: 15px;
+}
+
+.navbar-text {
+    color: white;
+    font-size: 1rem;
+    margin-left: auto;
+}
+
+.navbar-toggler {
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
+
+.navbar-toggler span {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #ffffff; /* White background for contrast */
+    color: black;
+    padding-top: 20px;
+    position: fixed;
+    top: 60px; /* Adjust based on navbar height */
+    bottom: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100);
+
+}
+.sidebar.show {
+    transform: translateX(0); /* Show sidebar */
+}
+
+.sidebar.hide {
+    transform: translateX(-100%); /* Hide sidebar */
+}
+
+/* Content Area Styles */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 250px; /* Space for the sidebar */
+    margin-top: 60px; /* Adjusted for fixed navbar height */
+    background-color: #f8f9fa; /* Consistent background color */
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Sidebar Links */
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: black;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #e0e0e0; /* Light gray for hover effect */
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.sidebar .mt-auto {
+    margin-top: auto; /* Push the last item to the bottom */
+}
+
+/* Overview Tabs */
+.overview-tabs {
+    background-color: #313b64;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.overview-tabs a {
+    color: white;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+/* Search box */
+.search-box {
+    background-color: #f1f3f5;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Cards */
+.card {
+    margin: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.card-icon {
+    font-size: 3rem;
+}
+
+/* Table Styles */
+.product-table th,
+.product-table td {
+    text-align: center;
+}
+
+.product-table th {
+    background-color: #1f2a5b; /* Header color */
+    color: white;
+}
+
+.product-table td {
+    padding: 10px; /* Increased padding for better readability */
+}
+
+/* Search Bar */
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.btn-add-product {
+    background-color: #254625; /* Dark green */
+    color: white;
+    border: none;
+}
+
+.btnsearch {
+    background-color: #304190; /* Blue */
+    color: white;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar-text {
+        font-size: 0.85rem; /* Smaller text for smaller screens */
+    }
+
+    .navbar-toggler {
+        font-size: 1.2rem;
+    }
+
+    .sidebar {
+        width: 250px; /* Mobile sidebar width */
+        transform: translateX(-100%); /* Sidebar hidden by default */
+    }
+
+    .content {
+        margin-left: 0; /* No sidebar space on mobile */
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand img {
+        height: 30px; /* Adjust logo size for smaller screens */
+    }
+
+    .navbar-text {
+        font-size: 0.75rem; /* Smaller text for very small screens */
+    }
+}

@@ -1,0 +1,135 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #2c3e50;
+    color: white;
+    position: fixed;
+    width: calc(100% - 250px);
+    z-index: 1000;
+    padding: 0.7rem 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 250px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-right: 15px;
+}
+
+.navbar-text {
+    color: white;
+    font-size: 1rem;
+    margin-left: auto;
+}
+
+.navbar-toggler {
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
+
+.navbar-toggler span {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #34495e;
+}
+
+.sidebar .mt-auto {
+    margin-top: auto;
+}
+
+/* Main content styles */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 250px;
+    margin-top: 56px;
+    background-color: #f8f9fa;
+}
+
+.overview-tabs {
+    background-color: #4c6ef5;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.overview-tabs a {
+    color: white;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.search-box {
+    background-color: #f1f3f5;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.card {
+    margin: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.card-icon {
+    font-size: 3rem;
+}
+
+/* Adjust responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .content {
+        margin-left: 0;
+        margin-top: 70px;
+    }
+
+    .overview-tabs a {
+        margin-right: 10px;
+    }
+}

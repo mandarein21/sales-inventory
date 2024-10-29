@@ -1,0 +1,82 @@
+body {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    height: 100vh;
+    overflow: hidden; /* Prevent scrollbars */
+}
+.navbar {
+    background-color: rgb(67, 100, 67);
+    position: fixed; /* Keep navbar fixed at the top */
+    width: 100%; /* Full width */
+    z-index: 1000; /* Ensure it is above other elements */
+}
+.sidebar {
+    min-width: 250px;
+    background-color: #f0f0f0;
+    padding: 15px;
+    position: fixed; /* Fixed position for sidebar */
+    top: 56px; /* Position below the navbar */
+    bottom: 0; /* Full height until bottom */
+    overflow-y: auto; /* Scrollable sidebar */
+    transition: transform 0.3s ease; /* Smooth transition for sidebar */
+    transform: translateX(0); /* Default position */
+}
+.sidebar.hide {
+    transform: translateX(-100%); /* Hide sidebar */
+}
+.sidebar a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+.sidebar a:hover {
+    background-color: #e2e6ea;
+}
+.content {
+    flex-grow: 1;
+    padding: 10px;
+    margin-left: 250px; /* Leave space for sidebar */
+    margin-top: 56px; /* Space for navbar */
+    background-color: rgb(255, 255, 255);
+    overflow-y: auto; /* Allow content to scroll if needed */
+    transition: margin-left 0.3s ease; /* Smooth transition for content */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed; /* Keep fixed on mobile */
+        min-width: 100%; /* Full width on mobile */
+        height: auto; /* Height adjusts to content */
+        transform: translateX(-100%); /* Hidden by default */
+    }
+    .sidebar.show {
+        transform: translateX(0); /* Show sidebar */
+    }
+    .content {
+        margin-left: 0; /* No margin on mobile */
+    }
+}
+.product-table th, .product-table td {
+    text-align: center;
+}
+.product-table th {
+    background-color: #7b62c3;
+    color: white;
+}
+.product-table td {
+    padding: 8px;
+}
+.search-bar {
+    margin-bottom: 20px;
+}
+.btn-view-entries {
+    background-color: #f6bb42;
+    color: white;
+    border: none;
+}
+.btn-add-product {
+    background-color: #5e775e;
+    color: white;
+    border: none;
+}
