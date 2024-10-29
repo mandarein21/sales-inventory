@@ -686,39 +686,6 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
 
 
 
-// Function to confirm deletion of a sale
-function confirmDeleteSale(saleID) {
-    // Show a confirmation dialog
-    if (confirm("Are you sure you want to delete this sale?")) {
-        deleteSale(saleID);
-    }
-}
-
-// Function to delete a sale
-function deleteSale(saleID) {
-    // Make an AJAX request to delete the sale
-    fetch(`/sales/${saleID}`, {
-        method: 'DELETE', // Specify the method
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Successfully deleted
-            alert("Sale deleted successfully.");
-            // Remove the row from the table
-            document.querySelector(`tr[data-id="${saleID}"]`).remove();
-        } else {
-            // Handle errors
-            alert("Failed to delete the sale. Please try again.");
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert("An error occurred. Please try again.");
-    });
-}
 
 
     </script>
