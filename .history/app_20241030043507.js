@@ -490,9 +490,7 @@ app.post('/sales/add', async (req, res) => {
 
 
 
-app.get('/', (req, res) => {
-    res.redirect('/employee/login'); // Redirect to login page
-});
+
 
 
 

@@ -86,8 +86,6 @@ app.use('/api/products', productRoutes);
 app.use('/auth', authRoutes); // Set up the product routes
 app.use('/api/sales', salesRoutes);
 app.use('/employee', employeeRoutes); // Ensure this is correctly placed
-//app.use('/', employeeRoutes); // Mount employeeRoutes without any prefix
-
 
 app.use('/sales', salesRoutes);
 // Use the categories routes
@@ -490,9 +488,7 @@ app.post('/sales/add', async (req, res) => {
 
 
 
-app.get('/', (req, res) => {
-    res.redirect('/employee/login'); // Redirect to login page
-});
+
 
 
 

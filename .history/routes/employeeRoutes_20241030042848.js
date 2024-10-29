@@ -36,9 +36,29 @@ router.get('/logout', (req, res) => {
     });
 });
 
-// Define your login route (POST)
-router.post('/login', employeeLogin); // Handle employee login
+// POST route for employee login
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
 
+    try {
+        const employee = await Employee.findOne({ Username: username });
+        if (!employee) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        const isMatch = await bcrypt.compare(password, employee.Password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        // Set session information for employee
+        req.session.userId = employee._id;
+        req.session.role = 'employee';
+        res.redirect('/employee/dashboard'); // Redirect after login
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
 
 
 // Define your employee dashboard route (GET)

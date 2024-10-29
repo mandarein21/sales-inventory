@@ -86,9 +86,7 @@ app.use('/api/products', productRoutes);
 app.use('/auth', authRoutes); // Set up the product routes
 app.use('/api/sales', salesRoutes);
 app.use('/employee', employeeRoutes); // Ensure this is correctly placed
-//app.use('/', employeeRoutes); // Mount employeeRoutes without any prefix
-
-
+app.use('/', employeeRoutes); // Mount employeeRoutes without any prefix
 app.use('/sales', salesRoutes);
 // Use the categories routes
 app.use('/admin', categoriesRoutes); // This mounts the routes at /admin
@@ -98,6 +96,7 @@ app.use('/admin/products', productRoutes);
 
 app.use('/admin', productRoutes); // Ensure this is set correctly
 // Use the product routes
+app.use('/employee', employeeRoutes);
 
 
 
@@ -490,9 +489,7 @@ app.post('/sales/add', async (req, res) => {
 
 
 
-app.get('/', (req, res) => {
-    res.redirect('/employee/login'); // Redirect to login page
-});
+
 
 
 
@@ -572,7 +569,8 @@ app.delete('/admin/categories/:id', (req, res) => {
 
 
 
-
+// Use employee routes with a prefix
+app.use('/employee', employeeRoutes);
 
 // Other route definitions and server setup
 app.get('/', (req, res) => {
