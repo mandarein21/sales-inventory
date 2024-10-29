@@ -574,6 +574,10 @@ app.delete('/admin/categories/:id', (req, res) => {
 
 
 
+// Other route definitions and server setup
+app.get('/', (req, res) => {
+    res.redirect('/employee/login'); // Redirect to the login page by default
+});
 
 // Define your routes
 app.get('/employee/dashboard', (req, res) => {
