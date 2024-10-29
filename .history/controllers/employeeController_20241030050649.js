@@ -40,7 +40,6 @@ const employeeLogin = async (req, res) => {
 
         // If login is successful, set the employee in session and redirect
         req.session.employee = employee; // Store employee details in session
-        console.log('Session after login:', req.session); // Log session data
         console.log('Employee logged in:', employee.Username); // Log successful login
         console.log('Logged in employee:', req.session.employee); // Check if employee data is set
         return res.redirect('/employee/empdashboard'); // Redirect to employee dashboard
