@@ -77,11 +77,13 @@
                 </tr>
             </thead>
             
-                
-           
+                <tr data-id="<%= sale.SaleID %>">
+                    <!-- Your table cells as before -->
+                </tr>
+            <% }); %>
             
             <tbody id="salesTableBody">
-                <% sales.sort((a, b) => new Date(b.Date) - new Date(a.Date)).forEach(function(sale) { %>
+                <% sales.forEach(function(sale) { %>
                 <tr data-id="<%= sale.SaleID %>">
                     <td class="customer-name"><%= sale.CusName %></td>
                     <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
