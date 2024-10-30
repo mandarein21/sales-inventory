@@ -66,13 +66,12 @@ const getAdminDashboard = async (req, res) => {
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        const todaySales = await Sales.aggregate([
-            { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
-            { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
-        ]);
+        const todaySales = await SalesModel.find({
+            Date: { $gte: startOfDay, $lte: endOfDay }
+        });
 
-        const todaySalesAmount = todaySales[0] ? todaySales[0].totalAmount : 0;
-        const salesCount = todaySales[0] ? todaySales[0].count : 0;
+        const todaySalesAmount = todaySales.reduce((sum, sale) => sum + sale.amount, 0);
+        const salesCount = todaySales.length;
 
         // Total products, out of stock, and low stock metrics
         const totalProductsCount = await ProductModel.countDocuments();
@@ -102,8 +101,6 @@ const getAdminDashboard = async (req, res) => {
         });
     }
 };
-
-
 
 
 

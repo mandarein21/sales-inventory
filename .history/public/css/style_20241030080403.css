@@ -326,14 +326,3 @@ body {
 .logout {
     margin-top: 280px;
 }
-
-
-.chart-container {
-    border: 1px solid #ccc; /* Optional: Add a border around the chart */
-    padding: 10px; /* Optional: Add padding inside the chart container */
-    border-radius: 5px; /* Optional: Rounded corners */
-}
-
-.mb-4 {
-    margin-top: 20px; /* Increase space between chart and text */
-}

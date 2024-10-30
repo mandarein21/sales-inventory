@@ -27,17 +27,7 @@
     
     <div class="row">
                
-        <div class="mb-5">
-            <h4>Today's Sales Overview</h4>
-            <div class="chart-container" style="width: 500px; height: 500px;">
-                <canvas id="salesChart"></canvas>
-            </div>
-             <!-- This is the chart area -->
-            <p>Today's Sales Amount: <%= todaySalesAmount %></p>
-        <p>Sales Count: <%= salesCount %></p>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         
-        </div>
         <div class="col-md-3">
             <div class="card text-center floating-card">
                 <div class="card-body">
@@ -118,38 +108,6 @@
             document.querySelector('.content').style.marginLeft = '250px'; // Restore content margin
         }
     }
-
-
-    const ctx = document.getElementById('salesChart').getContext('2d');
-const salesChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Total Sales (₱)', 'Sales Count'],
-        datasets: [{
-            label: 'Today\'s Sales Data',
-            data: [<%= todaySalesAmount.toFixed(2) %>, <%= salesCount %>],
-            backgroundColor: ['#4CAF50', '#FFA726'],
-            borderColor: ['#4CAF50', '#FFA726'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Amount / Count'
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                display: false
-            }
-        }
-    }
-});
     </script>
 </body>
 

@@ -31,7 +31,7 @@
             <!-- Search Bar -->
             <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter Customer name" aria-label="Sale Search">
+                    <input type="text" class="form-control" placeholder="Enter sale ID or customer name" aria-label="Sale Search">
                     <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
                 </div>
             </div>
@@ -250,6 +250,7 @@
                         <label for="editPaymentMethod" class="form-label">Payment Method</label>
                         <select class="form-select" id="editPaymentMethod" name="MethPay" required>
                             <option value="Cash">Cash</option>
+                            <option value="Credit Card">Credit Card</option>
                             <option value="Installment">Installment</option>
                         </select>
                     </div>
@@ -723,41 +724,37 @@ function deleteSale(saleID) {
 
 
 
-// Wait for the DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-        // Function to filter sales table rows based on input
-        function filterSalesTable() {
-            let searchInput = document.querySelector('.search-bar input').value.toLowerCase(); // Get the search input
-            let tableRows = document.querySelectorAll('.sales-table tbody tr'); // Select all table rows
+//SEARCH
+function filterTable() {
+    let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+    let tableRows = document.querySelectorAll('.sales-table tbody tr');
 
-            tableRows.forEach(function (row) {
-                // Get the relevant data from each row
-                let customerName = row.querySelector('.customer-name').textContent.toLowerCase();
-                let productId = row.querySelector('.product-id').textContent.toLowerCase();
+    tableRows.forEach(function (row) {
+        let productName = row.querySelector('.product-name').textContent.toLowerCase();
+        let categoryName = row.querySelector('.category-name').textContent.toLowerCase(); // Correct class name for category
+        let productId = row.querySelector('td:first-child').textContent.toLowerCase(); // Product ID
 
-                // Check if input is empty, show all rows if true
-                if (searchInput === "") {
-                    row.style.display = ''; // Show all rows if input is empty
-                } else {
-                    // Hide or show rows based on search input
-                    if (customerName.includes(searchInput) || productId.includes(searchInput)) {
-                        row.style.display = ''; // Show row if it matches
-                    } else {
-                        row.style.display = 'none'; // Hide row if it doesn't match
-                    }
-                }
-            });
+        // Check if input is empty, show all rows if true
+        if (searchInput === "") {
+            row.style.display = ''; // Show all rows if input is empty
+        } else {
+            // Hide or show rows based on search input
+            if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
+                row.style.display = ''; // Show row if it matches
+            } else {
+                row.style.display = 'none'; // Hide row if it doesn't match
+            }
         }
-
-        // Add event listener to the search button
-        document.getElementById('searchBtn').addEventListener('click', filterSalesTable);
-
-        // Add search functionality when user presses 'Enter' or types in the search input field
-        document.querySelector('.search-bar input').addEventListener('keyup', function (event) {
-            filterSalesTable(); // Trigger filtering on each keyup event (for dynamic filtering)
-        });
     });
+}
 
+// Add event listener to the search button
+document.getElementById('searchBtn').addEventListener('click', filterTable);
+
+// Add search functionality when user presses 'Enter' or types in the search input field
+document.querySelector('.search-bar input').addEventListener('keyup', function (event) {
+    filterTable(); // Trigger filtering on each keyup event (for dynamic filtering)
+});
 
     </script>
     

@@ -20,13 +20,15 @@ const getDashboardData = async (req, res) => {
         ]);
         const totalSalesAmount = totalSales[0] ? totalSales[0].total : 0;
 
+        // Count total sales records
+        const salesCount = await Sales.countDocuments();
+
         // Get today's sales data
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0); // Set to start of the day
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999); // Set to end of the day
 
-        // Get today's sales
         const todaySales = await Sales.aggregate([
             { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
             { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
@@ -43,12 +45,12 @@ const getDashboardData = async (req, res) => {
         res.render('admin/dashboard', {
             admin,
             totalSales: totalSalesAmount,
-            salesCount, // This will still show total sales count
-            todaySalesCount, // Pass today's sales count
+            salesCount,
             totalProducts,
             outOfStockProducts,
             lowStockProducts,
             todaySalesAmount, // Pass today's sales amount
+            todaySalesCount, // Pass today's sales count
         });
         
     } catch (error) {
@@ -56,7 +58,6 @@ const getDashboardData = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
 
 
 

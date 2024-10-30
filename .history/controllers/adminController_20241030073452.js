@@ -53,58 +53,70 @@ const getAdminDashboard = async (req, res) => {
     }
 
     try {
-        // Total sales amount across all sales
+        // Total Sales Amount Calculation
         const totalSalesData = await SalesModel.aggregate([
-            { $group: { _id: null, total: { $sum: "$TotalPrice" } } }
+            { $group: { _id: null, total: { $sum: "$amount" } } }
         ]);
-        
         const totalSales = totalSalesData[0] ? totalSalesData[0].total : 0;
 
-        // Today's sales data
+        // Total Products Count
+        const totalProductsCount = await ProductModel.countDocuments();
+        const totalProducts = totalProductsCount || 0;
+
+        // Out of Stock Products Count
+        const outOfStockProductsCount = await ProductModel.countDocuments({ Quantity: 0 });
+        const outOfStockProducts = outOfStockProductsCount || 0;
+
+        // Low Stock Products Count
+        const lowStockThreshold = 3;
+        const lowStockProductsCount = await ProductModel.countDocuments({ Quantity: { $lte: lowStockThreshold } });
+        const lowStockProducts = lowStockProductsCount || 0;
+
+        // Today's Date Range for Sales Calculation
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        const todaySales = await Sales.aggregate([
-            { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
-            { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
-        ]);
+        // Today's Sales Data (Count and Total Amount)
+        const todaySales = await SalesModel.find({
+            Date: { $gte: startOfDay, $lte: endOfDay }
+        });
 
-        const todaySalesAmount = todaySales[0] ? todaySales[0].totalAmount : 0;
-        const salesCount = todaySales[0] ? todaySales[0].count : 0;
+        // Calculate today's total sales amount and count
+        const todaySalesAmount = todaySales.reduce((sum, sale) => sum + sale.TotalPrice, 0);
+        const todaySalesCount = todaySales.length;
 
-        // Total products, out of stock, and low stock metrics
-        const totalProductsCount = await ProductModel.countDocuments();
-        const outOfStockProductsCount = await ProductModel.countDocuments({ Quantity: 0 });
-        const lowStockThreshold = 3;
-        const lowStockProductsCount = await ProductModel.countDocuments({ Quantity: { $lte: lowStockThreshold } });
+        // Debugging Information
+        console.log(`Total Products: ${totalProducts}`);
+        console.log(`Out of Stock Products Count: ${outOfStockProducts}`);
+        console.log(`Low Stock Products Count: ${lowStockProducts}`);
+        console.log(`Today's Sales Count: ${todaySalesCount}`);
+        console.log(`Today's Sales Amount: ${todaySalesAmount}`);
 
+        // Render the dashboard view with all necessary data
         res.render('admin/dashboard', {
             admin: req.session.admin,
             totalSales,
-            totalProducts: totalProductsCount,
-            outOfStockProducts: outOfStockProductsCount,
-            lowStockProducts: lowStockProductsCount,
+            totalProducts,
+            outOfStockProducts,
+            lowStockProducts,
             todaySalesAmount,
-            salesCount
+            todaySalesCount
         });
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
         res.render('admin/dashboard', {
             admin: req.session.admin,
-            totalSales: 0,
-            totalProducts: 0,
-            outOfStockProducts: 0,
-            lowStockProducts: 0,
-            todaySalesAmount: 0,
-            salesCount: 0
+            totalSales,
+            totalProducts,
+            outOfStockProducts,
+            lowStockProducts,
+            todaySalesAmount,  // Make sure these variables are passed
+            todaySalesCount    // Make sure these variables are passed
         });
     }
 };
-
-
-
 
 
 

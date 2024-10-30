@@ -250,6 +250,7 @@
                         <label for="editPaymentMethod" class="form-label">Payment Method</label>
                         <select class="form-select" id="editPaymentMethod" name="MethPay" required>
                             <option value="Cash">Cash</option>
+                            <option value="Credit Card">Credit Card</option>
                             <option value="Installment">Installment</option>
                         </select>
                     </div>
@@ -720,7 +721,19 @@ function deleteSale(saleID) {
 }
 
 
+// Resetting modals
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function () {
+            // Reset the modal form fields if needed
+            modal.querySelectorAll('form').forEach(form => form.reset());
 
+            // Remove the backdrop to ensure interactions with the page
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        });
+    });
+});
 
 
 // Wait for the DOM to be fully loaded

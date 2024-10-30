@@ -57,7 +57,7 @@ const getAdminDashboard = async (req, res) => {
         const totalSalesData = await SalesModel.aggregate([
             { $group: { _id: null, total: { $sum: "$TotalPrice" } } }
         ]);
-        
+
         const totalSales = totalSalesData[0] ? totalSalesData[0].total : 0;
 
         // Today's sales data
@@ -68,11 +68,11 @@ const getAdminDashboard = async (req, res) => {
 
         const todaySales = await Sales.aggregate([
             { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
-            { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
+            { $group: { _id: null, total: { $sum: "$TotalPrice" } } }
         ]);
 
-        const todaySalesAmount = todaySales[0] ? todaySales[0].totalAmount : 0;
-        const salesCount = todaySales[0] ? todaySales[0].count : 0;
+        const todaySalesAmount = todaySales[0] ? todaySales[0].total : 0; // Correctly access 'total'
+        const salesCount = todaySales.length;
 
         // Total products, out of stock, and low stock metrics
         const totalProductsCount = await ProductModel.countDocuments();
@@ -102,7 +102,6 @@ const getAdminDashboard = async (req, res) => {
         });
     }
 };
-
 
 
 

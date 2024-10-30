@@ -13,31 +13,43 @@
 
 <body>
 
-    <%- include('../layouts/empnavbar', { employee: employee }); -%>
-
-
-    <%- include('../layouts/empsidebar'); -%>
+    <%- include('../layouts/navbar', { admin: admin }); -%>
+    <%- include('../layouts/sidebar'); -%>
     
     <!-- Main Content -->
     <div class="content">
         
 <!-- Combined Overview Section -->
 <div class="mb-4">
-    <h4>Overview </h4>
+    <h4>Overview</h4>
+
+    <div class="mb-5">
+        <h4>Today's Sales Overview</h4>
+        <div class="chart-container" style="width: 200px; height: 200px;">
+            <canvas id="salesChart"></canvas>
+        </div>
+         <!-- This is the chart area -->
+        <p>Today's Sales Amount: <%= todaySalesAmount %></p>
+<p>Sales Count: <%= salesCount %></p>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    </div>
+    
     
     <div class="row">
-               
-        <div class="mb-5">
-            <h4>Today's Sales Overview</h4>
-            <div class="chart-container" style="width: 500px; height: 500px;">
-                <canvas id="salesChart"></canvas>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center floating-card">
+                <div class="card-body">
+                    <div class="card-icon text-primary">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h5 class="card-title">Total Sales</h5>
+                    <p class="card-text count"><strong>₱ <%= totalSales.toFixed(2) %></strong></p>
+                    <small class="text-muted">Total sales amount for selected date range</small>
+                </div>
             </div>
-             <!-- This is the chart area -->
-            <p>Today's Sales Amount: <%= todaySalesAmount %></p>
-        <p>Sales Count: <%= salesCount %></p>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        
-        </div>
+        </div>        
+    
         <div class="col-md-3">
             <div class="card text-center floating-card">
                 <div class="card-body">
@@ -76,6 +88,7 @@
         </div>
     </div>
 </div>
+
 
 
     <!-- Logout Confirmation Modal -->
@@ -120,6 +133,7 @@
     }
 
 
+
     const ctx = document.getElementById('salesChart').getContext('2d');
 const salesChart = new Chart(ctx, {
     type: 'bar',
@@ -134,6 +148,8 @@ const salesChart = new Chart(ctx, {
         }]
     },
     options: {
+        responsive: false, // Disables auto resizing
+        maintainAspectRatio: false, // Allows custom width/height
         scales: {
             y: {
                 beginAtZero: true,
@@ -150,7 +166,11 @@ const salesChart = new Chart(ctx, {
         }
     }
 });
+
+
     </script>
+    
+
 </body>
 
 </html>

@@ -14,41 +14,27 @@ const getDashboardData = async (req, res) => {
 
         const admin = req.session.admin;
 
-        // Get total sales amount
         const totalSales = await Sales.aggregate([
             { $group: { _id: null, total: { $sum: "$TotalPrice" } } }
         ]);
+        
         const totalSalesAmount = totalSales[0] ? totalSales[0].total : 0;
 
-        // Get today's sales data
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0); // Set to start of the day
-        const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999); // Set to end of the day
-
-        // Get today's sales
-        const todaySales = await Sales.aggregate([
-            { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
-            { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
-        ]);
-
-        const todaySalesAmount = todaySales[0] ? todaySales[0].totalAmount : 0;
-        const todaySalesCount = todaySales[0] ? todaySales[0].count : 0;
+        // Count total sales records
+        const salesCount = await Sales.countDocuments();
 
         const totalProducts = await Product.countDocuments();
         const outOfStockProducts = await Product.countDocuments({ stock: 0 });
         const lowStockProducts = await Product.countDocuments({ stock: { $lt: 5 } });
 
-        // Render the dashboard with the gathered data
         res.render('admin/dashboard', {
             admin,
             totalSales: totalSalesAmount,
-            salesCount, // This will still show total sales count
-            todaySalesCount, // Pass today's sales count
+            salesCount,
             totalProducts,
             outOfStockProducts,
             lowStockProducts,
-            todaySalesAmount, // Pass today's sales amount
+            todaySalesAmount: 0, // Initialize it here if it’s not calculated
         });
         
     } catch (error) {
@@ -56,8 +42,6 @@ const getDashboardData = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
-
 
 
 
