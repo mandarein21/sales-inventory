@@ -3,6 +3,14 @@ const Employee = require('../models/Employee'); // Ensure the Employee model is 
 const Product = require('../models/Product'); // Ensure the Product model is correctly imported
 const SalesModel = require('../models/Sale'); // Import your Sales model
 const ProductModel = require('../models/Product'); // Import your Product model
+const SalesModel = require('../models/Sale'); // Import your Sales model
+
+
+
+
+
+
+
 
 
 // Employee login function
@@ -16,7 +24,7 @@ const employeeLogin = async (req, res) => {
         // Check if employee exists
         if (!employee) {
             console.log('Employee not found');
-            return res.render('auth/login', { error: 'Unauthorized - Employee not found' }); // Render login view with error message
+            return res.render('auth/login#', { error: 'Unauthorized - Employee not found' }); // Render login view with error message
         }
 
         // Log passwords for debugging (remove or comment out in production)
@@ -65,7 +73,7 @@ const empDashboard = async (req, res) => {
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        const todaySales = await SalesModel.aggregate([
+        const todaySales = await Sales.aggregate([
             { $match: { Date: { $gte: startOfDay, $lte: endOfDay } } },
             { $group: { _id: null, totalAmount: { $sum: "$TotalPrice" }, count: { $sum: 1 } } }
         ]);
@@ -104,10 +112,15 @@ const empDashboard = async (req, res) => {
 
 
 
+
+
+
+
+
 const viewEmployeeSales = async (req, res) => {
     try {
         // Fetch any necessary data for the sales page
-        const sales = await SalesModel.find(); // Example; adjust based on your data model
+        const sales = await Sales.find(); // Example; adjust based on your data model
         res.render('employee/empsales', { sales }); // Adjust view path as needed
     } catch (error) {
         console.error('Error fetching sales data:', error);
@@ -135,7 +148,7 @@ const viewProducts = async (req, res) => {
 // View sales function
 const viewSales = async (req, res) => {
     try {
-        const sales = await SalesModel.find(); // Fetch sales data from the Sales model
+        const sales = await Sales.find(); // Fetch sales data from the Sales model
         return res.render('employee/empsales', { sales, employee: req.session.employee }); // Pass the admin object along with sales data
     } catch (error) {
         console.error('Error fetching sales:', error);

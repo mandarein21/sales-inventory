@@ -60,12 +60,12 @@ const getDashboardData = async (req, res) => {
 
 const getEmpDashboardData = async (req, res) => {
     try {
-        if (!req.session.employee) {
+        if (!req.session.admin) {
             console.log('Employee not logged in');
-            return res.redirect('/auth/login#');
+            return res.redirect('/auth/login');
         }
 
-        const employee = req.session.employee;
+        const admin = req.session.admin;
 
         // Get total sales amount
         const totalSales = await Sales.aggregate([
@@ -93,8 +93,8 @@ const getEmpDashboardData = async (req, res) => {
         const lowStockProducts = await Product.countDocuments({ stock: { $lt: 5 } });
 
         // Render the dashboard with the gathered data
-        res.render('employee/empdashboard', {
-            employee,
+        res.render('admin/dashboard', {
+            admin,
             totalSales: totalSalesAmount,
             salesCount, // This will still show total sales count
             todaySalesCount, // Pass today's sales count
@@ -112,6 +112,39 @@ const getEmpDashboardData = async (req, res) => {
 
 
 
+
+const getEmpDashboardData = async (req, res) => {
+    try {
+        // Check if the admin is logged in by looking for admin in session
+        if (!req.session.employee) {
+            console.log('Employee not logged in');
+            return res.redirect('/auth/login'); // Redirect to login if not logged in
+        }
+
+        // Get admin details from the session
+        const employee = req.session.employee;
+
+        // Fetch required data for the dashboard
+        const totalSales = await Sales.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]);
+        const totalSalesAmount = totalSales[0] ? totalSales[0].total : 0;
+
+        const totalProducts = await Product.countDocuments();
+        const outOfStockProducts = await Product.countDocuments({ stock: 0 });
+        const lowStockProducts = await Product.countDocuments({ stock: { $lt: 5 } });
+
+        // Render dashboard with data
+        res.render('employee/empdashboard', {
+            employee,
+            totalSales: totalSalesAmount,
+            totalProducts,
+            outOfStockProducts,
+            lowStockProducts,
+        });
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
 
 module.exports = {
     getDashboardData,

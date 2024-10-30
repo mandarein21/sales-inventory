@@ -126,56 +126,36 @@
     }
 
 
-    // Data for today's sales amount
-    const todaySalesAmount = <%= todaySalesAmount %>;
-    const todaySalesCount = <%= salesCount %>;
-
-    // Create the sales amount chart
-    const salesAmountCtx = document.getElementById('salesAmountChart').getContext('2d');
-    const salesAmountChart = new Chart(salesAmountCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Today'], // Label for the chart
-            datasets: [{
-                label: 'Sales Amount',
-                data: [todaySalesAmount], // Sales amount data
-                backgroundColor: 'rgba(75, 192, 192, 0.5)', // Bar color
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+    const ctx = document.getElementById('salesChart').getContext('2d');
+const salesChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Total Sales (₱)', 'Sales Count'],
+        datasets: [{
+            label: 'Today\'s Sales Data',
+            data: [<%= todaySalesAmount.toFixed(2) %>, <%= salesCount %>],
+            backgroundColor: ['#4CAF50', '#FFA726'],
+            borderColor: ['#4CAF50', '#FFA726'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Amount / Count'
                 }
             }
-        }
-    });
-
-    // Create the sales count chart
-    const salesCountCtx = document.getElementById('salesCountChart').getContext('2d');
-    const salesCountChart = new Chart(salesCountCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Today'], // Label for the chart
-            datasets: [{
-                label: 'Sales Count',
-                data: [todaySalesCount], // Sales count data
-                backgroundColor: 'rgba(255, 99, 132, 0.5)', // Bar color
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+        plugins: {
+            legend: {
+                display: false
             }
         }
-    });
-
+    }
+});
     </script>
 </body>
 

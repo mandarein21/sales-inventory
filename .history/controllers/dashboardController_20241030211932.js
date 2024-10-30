@@ -60,7 +60,7 @@ const getDashboardData = async (req, res) => {
 
 const getEmpDashboardData = async (req, res) => {
     try {
-        if (!req.session.employee) {
+        if (!req.session.admin) {
             console.log('Employee not logged in');
             return res.redirect('/auth/login#');
         }

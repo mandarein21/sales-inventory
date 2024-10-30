@@ -16,7 +16,7 @@ router.get('/empdashboard', checkAuth, empDashboard);
 // Define the route for viewing products
 router.get('/empproduct', checkAuth, viewProducts); 
 
-
+router.get('/dashboard', empDashboard);
 
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {

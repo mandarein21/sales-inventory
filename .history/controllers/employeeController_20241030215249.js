@@ -16,7 +16,7 @@ const employeeLogin = async (req, res) => {
         // Check if employee exists
         if (!employee) {
             console.log('Employee not found');
-            return res.render('auth/login', { error: 'Unauthorized - Employee not found' }); // Render login view with error message
+            return res.render('auth/login#', { error: 'Unauthorized - Employee not found' }); // Render login view with error message
         }
 
         // Log passwords for debugging (remove or comment out in production)

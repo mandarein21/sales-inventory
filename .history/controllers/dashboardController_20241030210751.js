@@ -60,12 +60,12 @@ const getDashboardData = async (req, res) => {
 
 const getEmpDashboardData = async (req, res) => {
     try {
-        if (!req.session.employee) {
+        if (!req.session.admin) {
             console.log('Employee not logged in');
             return res.redirect('/auth/login#');
         }
 
-        const employee = req.session.employee;
+        const admin = req.session.employee;
 
         // Get total sales amount
         const totalSales = await Sales.aggregate([
