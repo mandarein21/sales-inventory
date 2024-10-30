@@ -76,7 +76,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="salesTableBody">
+            <tbody>
                 <% sales.forEach(function(sale) { %>
                 <tr data-id="<%= sale.SaleID %>">
                     <td class="customer-name"><%= sale.CusName %></td>
@@ -370,12 +370,6 @@ async function fetchProductsByCategory(categoryId) {
             option.textContent = product.ProductName; // Assuming each product has a ProductName field
             productSelect.appendChild(option);
         });
-    // Optional: If there are no products, show a message
-    if (products.length === 0) {
-            const option = document.createElement('option');
-            option.textContent = 'No products available';
-            productSelect.appendChild(option);
-        }
     } catch (error) {
         console.error('Error fetching products:', error);
     }
@@ -414,14 +408,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     productSelect.addEventListener('change', async function () {
-    const selectedProductId = this.value; // Get selected product ID
-    console.log("Selected Product ID:", selectedProductId); // Debugging
+    const selectedProductId = this.value;
 
     if (selectedProductId) {
         try {
             const response = await fetch(`/admin/api/products/${selectedProductId}`);
-            console.log(`Fetching product from URL: /admin/api/products/${selectedProductId}`);
-            
             if (!response.ok) {
                 console.error(`Failed to fetch product. Status: ${response.status}`);
                 productPrice = 0;
@@ -430,12 +421,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const product = await response.json();
-            console.log("Fetched product:", JSON.stringify(product, null, 2)); // Log the fetched product object
+            console.log("Fetched product:", product); // Log the fetched product object
 
-            // Ensure product.Price is accessed correctly
+            // Check if the product and price are correctly defined
             if (product && typeof product.Price === 'number') {
                 productPrice = product.Price;
-                console.log("Product Price:", productPrice); // Log the product price
                 updateTotalPrice(); // Update total price based on current quantity
             } else {
                 console.error('Product price is undefined or not a number.', product);
@@ -452,8 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateTotalPrice();
     }
 });
-
-
 
 
     // Update total price based on quantity input
@@ -696,35 +684,6 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
 
 
 
-//SEARCH
-// Function to filter table rows based on input
-function filterTable() {
-            let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
-            let tableRows = document.querySelectorAll('#salesTableBody tr');
-
-            tableRows.forEach(function(row) {
-                let productName = row.querySelector('.product-name').textContent.toLowerCase();
-                let categoryName = row.querySelector('.customer-name').textContent.toLowerCase();
-                let productId = row.querySelector('.product-id').textContent.toLowerCase();
-                
-                if (searchInput === "") {
-                    row.style.display = ''; // Show all rows if input is empty
-                } else {
-                    // Check if any column text includes the search term
-                    if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
-                        row.style.display = ''; // Show row if it matches
-                    } else {
-                        row.style.display = 'none'; // Hide row if it doesn't match
-                    }
-                }
-            });
-        }
-
-// Event listeners for search button and dynamic typing
-document.getElementById('searchBtn').addEventListener('click', filterTable);
-document.querySelector('.search-bar input').addEventListener('keyup', filterTable);
-
-
 
 // Function to confirm deletion of a sale
 function confirmDeleteSale(saleID) {
@@ -764,7 +723,32 @@ function deleteSale(saleID) {
 
 
 
+// Function to filter table rows based on input
+function filterTable() {
+            let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+            let tableRows = document.querySelectorAll('#salesTableBody tr');
 
+            tableRows.forEach(function(row) {
+                let productName = row.querySelector('.product-name').textContent.toLowerCase();
+                let categoryName = row.querySelector('.customer-name').textContent.toLowerCase();
+                let productId = row.querySelector('.product-id').textContent.toLowerCase();
+                
+                if (searchInput === "") {
+                    row.style.display = ''; // Show all rows if input is empty
+                } else {
+                    // Check if any column text includes the search term
+                    if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
+                        row.style.display = ''; // Show row if it matches
+                    } else {
+                        row.style.display = 'none'; // Hide row if it doesn't match
+                    }
+                }
+            });
+        }
+
+        // Event listeners for search button and dynamic typing
+        document.getElementById('searchBtn').addEventListener('click', filterTable);
+        document.querySelector('.search-bar input').addEventListener('keyup', filterTable);
 
 
     </script>

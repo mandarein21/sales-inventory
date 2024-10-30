@@ -103,11 +103,10 @@ app.use('/admin', productRoutes); // Ensure this is set correctly
 
 //Fetching a Single Product by ID
 //sa pagaadd to ng sales sa pagget ng product
-// Fetching a Single Product by ProductID
 app.get('/admin/api/products/:productId', async (req, res) => {
     try {
-        const productId = req.params.productId; // Ensure you're using productId
-        const product = await Product.findOne({ ProductID: productId }); // Use findOne to match ProductID
+        const productId = req.params.productId; // Use the correct parameter
+        const product = await Product.findOne({ ProductID: productId }); // Search by ProductID
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
@@ -118,6 +117,22 @@ app.get('/admin/api/products/:productId', async (req, res) => {
     }
 });
 
+app.get('/admin/api/products/:productId', async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        console.log("Fetching product with ID:", productId); // Log the product ID
+        const product = await Product.findOne({ ProductID: productId });
+        console.log("Fetched product:", product); // Log the fetched product
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.json(product);
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 

@@ -103,11 +103,10 @@ app.use('/admin', productRoutes); // Ensure this is set correctly
 
 //Fetching a Single Product by ID
 //sa pagaadd to ng sales sa pagget ng product
-// Fetching a Single Product by ProductID
 app.get('/admin/api/products/:productId', async (req, res) => {
     try {
-        const productId = req.params.productId; // Ensure you're using productId
-        const product = await Product.findOne({ ProductID: productId }); // Use findOne to match ProductID
+        const productId = req.params.productId; // Use the correct parameter
+        const product = await Product.findOne({ ProductID: productId }); // Search by ProductID
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }

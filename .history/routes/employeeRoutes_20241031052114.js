@@ -11,10 +11,10 @@ const {
 router.get('/empsales', employeeController.viewEmployeeSales);
 
 // Define your employee dashboard route (GET)
-router.get('/empdashboard', empDashboard);
+router.get('/empdashboard', checkAuth, empDashboard);
 
 // Define the route for viewing products
-router.get('/empproduct', viewProducts); 
+router.get('/empproduct', checkAuth, viewProducts); 
 
 
 

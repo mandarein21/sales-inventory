@@ -140,34 +140,22 @@
         }
     }
 
-    // Function to filter table rows based on input
-    function filterTable() {
-            let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
-            let tableRows = document.querySelectorAll('#salesTableBody tr');
+    function searchSales() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#salesTableBody tr");
 
-            tableRows.forEach(function(row) {
-                let productName = row.querySelector('.product-name').textContent.toLowerCase();
-                let categoryName = row.querySelector('.customer-name').textContent.toLowerCase();
-                let productId = row.querySelector('.product-id').textContent.toLowerCase();
-                
-                if (searchInput === "") {
-                    row.style.display = ''; // Show all rows if input is empty
+            rows.forEach(row => {
+                const saleId = row.getAttribute("data-id").toLowerCase();
+                const customerName = row.querySelector(".customer-name").innerText.toLowerCase();
+
+                if (saleId.includes(query) || customerName.includes(query)) {
+                    row.style.display = ""; // Show matching row
                 } else {
-                    // Check if any column text includes the search term
-                    if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
-                        row.style.display = ''; // Show row if it matches
-                    } else {
-                        row.style.display = 'none'; // Hide row if it doesn't match
-                    }
+                    row.style.display = "none"; // Hide non-matching row
                 }
             });
         }
-
-        // Event listeners for search button and dynamic typing
-        document.getElementById('searchBtn').addEventListener('click', filterTable);
-        document.querySelector('.search-bar input').addEventListener('keyup', filterTable);
     </script>
-  
 </body>
 
 </html>

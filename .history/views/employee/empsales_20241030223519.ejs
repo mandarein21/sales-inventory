@@ -141,33 +141,39 @@
     }
 
     // Function to filter table rows based on input
-    function filterTable() {
-            let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
-            let tableRows = document.querySelectorAll('#salesTableBody tr');
+function filterTable() {
+    let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+    let tableRows = document.querySelectorAll('.product-table tbody tr');
 
-            tableRows.forEach(function(row) {
-                let productName = row.querySelector('.product-name').textContent.toLowerCase();
-                let categoryName = row.querySelector('.customer-name').textContent.toLowerCase();
-                let productId = row.querySelector('.product-id').textContent.toLowerCase();
-                
-                if (searchInput === "") {
-                    row.style.display = ''; // Show all rows if input is empty
-                } else {
-                    // Check if any column text includes the search term
-                    if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
-                        row.style.display = ''; // Show row if it matches
-                    } else {
-                        row.style.display = 'none'; // Hide row if it doesn't match
-                    }
-                }
-            });
+    tableRows.forEach(function (row) {
+        let productName = row.querySelector('.product-name').textContent.toLowerCase();
+        let categoryName = row.querySelector('.category-name').textContent.toLowerCase(); // Updated to use 'category-name'
+        let productId = row.querySelector('td:first-child').textContent.toLowerCase(); // Product ID
+        
+        // Check if input is empty, show all rows if true
+        if (searchInput === "") {
+            row.style.display = ''; // Show all rows if input is empty
+        } else {
+            // Hide or show rows based on search input
+            if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
+                row.style.display = ''; // Show row if it matches
+            } else {
+                row.style.display = 'none'; // Hide row if it doesn't match
+            }
         }
+    });
+}
 
-        // Event listeners for search button and dynamic typing
-        document.getElementById('searchBtn').addEventListener('click', filterTable);
-        document.querySelector('.search-bar input').addEventListener('keyup', filterTable);
+
+    // Add event listener to the search button
+    document.getElementById('searchBtn').addEventListener('click', filterTable);
+
+    // Add search functionality when user presses 'Enter' or types in the search input field
+    document.querySelector('.search-bar input').addEventListener('keyup', function (event) {
+        filterTable(); // Trigger filtering on each keyup event (for dynamic filtering)
+    });
+
     </script>
-  
 </body>
 
 </html>

@@ -103,11 +103,10 @@ app.use('/admin', productRoutes); // Ensure this is set correctly
 
 //Fetching a Single Product by ID
 //sa pagaadd to ng sales sa pagget ng product
-// Fetching a Single Product by ProductID
 app.get('/admin/api/products/:productId', async (req, res) => {
     try {
-        const productId = req.params.productId; // Ensure you're using productId
-        const product = await Product.findOne({ ProductID: productId }); // Use findOne to match ProductID
+        const productId = req.params.id;
+        const product = await Product.findById(productId); // Or however you're fetching the product
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
@@ -117,7 +116,6 @@ app.get('/admin/api/products/:productId', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-
 
 
 
@@ -136,9 +134,6 @@ app.get('/admin/api/products', async (req, res) => {
         res.status(500).json({ message: 'Server error' }); // Handles server errors
     }
 });
-
-
-
 
 
 
@@ -261,18 +256,37 @@ app.get('/products/:id', async (req, res) => {
 
 
 
+// Example of Express route handling for updating a product
+app.put('/products/update/:productId', async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const updatedData = req.body;
 
-// Update product sa inventory mismo
+        const updatedProduct = await Product.findOneAndUpdate({ ProductID: productId }, updatedData, { new: true });
+        
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        res.json(updatedProduct);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+
+//sa pageedit ng product
 app.put('/api/products/:id', async (req, res) => {
     const { ProductName, CategoryID, Quantity, Price } = req.body;
-    const productId = req.params.id; // productId can contain letters
 
     try {
-        const updatedProduct = await Product.findOneAndUpdate(
-            { ProductID: productId }, // Find by ProductID instead of MongoDB ObjectId
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
             {
                 ProductName,
-                CategoryID: new mongoose.Types.ObjectId(CategoryID), // Convert to ObjectId here with 'new'
+                CategoryID: mongoose.Types.ObjectId(CategoryID), // Convert to ObjectId here if needed
                 Quantity,
                 Price
             },
@@ -286,9 +300,6 @@ app.put('/api/products/:id', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
-
 
 
 

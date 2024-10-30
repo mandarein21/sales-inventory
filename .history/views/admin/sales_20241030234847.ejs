@@ -414,14 +414,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     productSelect.addEventListener('change', async function () {
-    const selectedProductId = this.value; // Get selected product ID
+    const selectedProductId = this.value;
     console.log("Selected Product ID:", selectedProductId); // Debugging
 
     if (selectedProductId) {
         try {
             const response = await fetch(`/admin/api/products/${selectedProductId}`);
-            console.log(`Fetching product from URL: /admin/api/products/${selectedProductId}`);
-            
             if (!response.ok) {
                 console.error(`Failed to fetch product. Status: ${response.status}`);
                 productPrice = 0;
@@ -430,9 +428,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const product = await response.json();
-            console.log("Fetched product:", JSON.stringify(product, null, 2)); // Log the fetched product object
+            console.log("Fetched product:", product); // Log the fetched product object
 
-            // Ensure product.Price is accessed correctly
             if (product && typeof product.Price === 'number') {
                 productPrice = product.Price;
                 console.log("Product Price:", productPrice); // Log the product price
@@ -452,7 +449,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateTotalPrice();
     }
 });
-
 
 
 

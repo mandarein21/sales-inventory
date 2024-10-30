@@ -14,7 +14,7 @@ router.get('/empsales', employeeController.viewEmployeeSales);
 router.get('/empdashboard', empDashboard);
 
 // Define the route for viewing products
-router.get('/empproduct', viewProducts); 
+router.get('/empproduct', checkAuth, viewProducts); 
 
 
 
