@@ -1,0 +1,779 @@
+<!DOCTYPE html> 
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">
+    <title>Sales</title>
+   
+</head>
+
+<body>
+    <%- include('../layouts/navbar', { admin: admin }); -%>
+
+    <%- include('../layouts/sidebar'); -%>
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-1"><i class="bi bi-cart"></i> Sales</h1>
+            <button class="btn btn-add-sale" data-bs-toggle="modal" data-bs-target="#addSaleModal">+ New Sales</button>
+        </div>
+    
+        <!-- Divider Line -->
+        <hr>
+    
+        <!-- Search Bar and Pagination -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <!-- Search Bar -->
+            <div class="search-bar me-3" style="max-width: 400px; width: 100%;">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter Customer name" aria-label="Sale Search">
+                    <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
+                </div>
+            </div>
+    
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    
+
+        <table class="table table-bordered sales-table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Date</th>
+                    <th>Customer Address</th>
+                    <th>Contact Number</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th> <!-- New Total Price Column -->
+                    <th>Payment Method</th>
+                    <th>Installment Months</th>
+                    <th>Amount Paid</th>
+                    <th>Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            
+                
+           
+            
+            <tbody id="salesTableBody">
+                <% sales.sort((a, b) => new Date(b.Date) - new Date(a.Date)).forEach(function(sale) { %>
+                <tr data-id="<%= sale.SaleID %>">
+                    <td class="customer-name"><%= sale.CusName %></td>
+                    <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
+                    <td class="customer-address"><%= sale.CusAdd %></td>
+                    <td class="contact-number"><%= sale.CusContact %></td>
+                    <td class="product-id"><%= sale.ProductID %></td> <!-- Assuming ProductID is a Number -->
+                    <td class="product-name"><%= sale.ProductName %></td>
+                    <td class="quantity"><%= sale.Quantity %></td>
+                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td> <!-- Use TotalPrice directly from the database -->
+                    <td class="payment-method"><%= sale.MethPay %></td>
+                    <td class="installment-months"><%= sale.NumMonths !== null ? sale.NumMonths : 'N/A' %></td>
+                    <td class="amount-paid"><%= sale.AmountPayment.toFixed(2) %></td>
+                    <td class="balance"><%= sale.Balance !== null ? sale.Balance.toFixed(2) : '0.00' %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSaleModal" onclick="editSale('<%= sale.SaleID %>')" title="Edit Sale">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDeleteSale('<%= sale.SaleID %>')" title="Delete Sale">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
+        
+    </div>
+
+   <!-- Add Sale Modal -->
+<div class="modal fade" id="addSaleModal" tabindex="-1" aria-labelledby="addSaleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSaleModalLabel">Add New Sale</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSaleForm">
+                    <div class="mb-3">
+                        <label for="cusName" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="cusName" name="CusName" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="Date" value="<%= new Date().toISOString().split('T')[0] %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cusAdd" class="form-label">Customer Address</label>
+                        <input type="text" class="form-control" id="cusAdd" name="CusAdd" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cusContact" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="cusContact" name="CusContact" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categorySelect" class="form-label">Product Category</label>
+                        <select class="form-select mt-2" id="categorySelect" name="ProductCategory" required>
+                            <option value="">Select a Category</option>
+                            <!-- Categories will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productSelect" class="form-label">Product Name</label>
+                        <select class="form-select mt-2" id="productSelect" name="ProductID" required>
+                            <option value="">Select a Product</option>
+                            <!-- Products will be populated based on the selected category -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="Quantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select" id="paymentMethod" name="MethPay" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Installment">Installment</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="installmentSection" style="display: none;">
+                        <label for="numMonths" class="form-label">Installment Months</label>
+                        <input type="number" class="form-control" id="numMonths" name="NumMonths"> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="totalPrice" class="form-label">Total Price</label>
+                        <input type="number" class="form-control" id="totalPrice" name="TotalPrice" readonly>
+                    </div>
+                    
+                    <div class="mb-3" id="amountPaidSection">
+                        <label for="amountPayment" class="form-label">Amount Paid</label>
+                        <input type="number" class="form-control" id="amountPayment" name="AmountPayment" required>
+                    </div>
+                    <div class="mb-3" id="balanceSection">
+                        <label for="balance" class="form-label">Balance</label>
+                        <input type="number" class="form-control" id="balance" name="Balance" readonly>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Sale</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   <!-- Edit Sale Modal -->
+<div class="modal fade" id="editSaleModal" tabindex="-1" aria-labelledby="editSaleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSaleModalLabel">Edit Sale</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSaleForm">
+                    <!-- Customer Name -->
+                    <div class="mb-3">
+                        <label for="editCusName" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="editCusName" name="CusName" required>
+                    </div>
+                    
+                    <!-- Date -->
+                    <div class="mb-1">
+                        <label for="editDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="editDate" name="Date" required>
+                    </div>
+
+                    <!-- Customer Address -->
+                    <div class="mb-3">
+                        <label for="editCusAdd" class="form-label">Customer Address</label>
+                        <input type="text" class="form-control" id="editCusAdd" name="CusAdd" required>
+                    </div>
+
+                    <!-- Contact Number -->
+                    <div class="mb-3">
+                        <label for="editCusContact" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="editCusContact" name="CusContact" required>
+                    </div>
+
+                    <!-- Product Category (readonly) -->
+                    <div class="mb-3">
+                        <label for="editCategorySelect" class="form-label">Product Category</label>
+                        <select class="form-select mt-2" id="editCategorySelect" name="ProductCategory" required disabled>
+                            <option value="">Select a Category</option>
+                            <!-- Categories will be populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <!-- Product Name (readonly) -->
+                    <div class="mb-3">
+                        <label for="editProductSelect" class="form-label">Product Name</label>
+                        <select class="form-select mt-2" id="editProductSelect" name="ProductID" required disabled>
+                            <option value="">Select a Product</option>
+                            <!-- Products will be populated based on the selected category -->
+                        </select>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="mb-3">
+                        <label for="editQuantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="editQuantity" name="Quantity" required>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="mb-3">
+                        <label for="editPaymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select" id="editPaymentMethod" name="MethPay" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Installment">Installment</option>
+                        </select>
+                    </div>
+
+                    <!-- Installment Months (visible if Installment is selected) -->
+                    <div class="mb-3" id="editInstallmentSection" style="display: none;">
+                        <label for="editNumMonths" class="form-label">Installment Months</label>
+                        <input type="number" class="form-control" id="editNumMonths" name="NumMonths"> 
+                    </div>
+
+                    <!-- Total Price (readonly) -->
+                    <div class="mb-3">
+                        <label for="editTotalPrice" class="form-label">Total Price</label>
+                        <input type="number" class="form-control" id="editTotalPrice" name="TotalPrice" readonly>
+                    </div>
+
+                    <!-- Amount Paid -->
+                    <div class="mb-3">
+                        <label for="editAmountPayment" class="form-label">Amount Paid</label>
+                        <input type="number" class="form-control" id="editAmountPayment" name="AmountPayment" required>
+                    </div>
+
+                    <!-- Balance (readonly) -->
+                    <div class="mb-3">
+                        <label for="editBalance" class="form-label">Balance</label>
+                        <input type="number" class="form-control" id="editBalance" name="Balance" readonly>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+     <!-- Logout Confirmation Modal -->
+     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/admin/logout" class="btn btn-danger">Yes, Logout</a> <!-- Redirect to login page -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap and FontAwesome JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        //sidebar hamburger button
+        // Toggle sidebar on small screens
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hide');
+        }
+
+
+        //fetching categories inside the modal sales
+
+        async function fetchCategories() {
+            const response = await fetch('/admin/api/categories');
+            const categories = await response.json();
+            const categorySelect = document.getElementById('categorySelect');
+
+            // Clear existing options
+            categorySelect.innerHTML = '<option value="">Select a Category</option>';
+
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category._id; // Assuming each category has an _id field
+                option.textContent = category.CategoryName; // Assuming each category has a name field
+                categorySelect.appendChild(option);
+            });
+        }
+
+
+// Fetch products based on selected category
+async function fetchProductsByCategory(categoryId) {
+    if (!categoryId) {
+        return; // Exit if no category is selected
+    }
+
+    console.log("Fetching products for categoryId:", categoryId); // Debug line
+
+    try {
+        const response = await fetch(`/admin/api/products?categoryId=${categoryId}`);
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const products = await response.json();
+        
+        const productSelect = document.getElementById('productSelect');
+        productSelect.innerHTML = ''; // Clear previous options
+
+        // Populate product select dropdown with fetched products
+        products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.ProductID; // Assuming each product has a ProductID field
+            option.textContent = product.ProductName; // Assuming each product has a ProductName field
+            productSelect.appendChild(option);
+        });
+    // Optional: If there are no products, show a message
+    if (products.length === 0) {
+            const option = document.createElement('option');
+            option.textContent = 'No products available';
+            productSelect.appendChild(option);
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+}
+
+// Event listener for category selection
+const categorySelect = document.getElementById('categorySelect');
+categorySelect.addEventListener('change', async (event) => {
+    const selectedCategoryId = event.target.value; // Get the selected category ID
+    await fetchProductsByCategory(selectedCategoryId); // Fetch products for the selected category
+});
+
+
+
+//add sales function
+document.addEventListener("DOMContentLoaded", () => {
+    const categorySelect = document.getElementById('categorySelect');
+    const productSelect = document.getElementById('productSelect');
+    const quantityInput = document.getElementById("quantity");
+    const totalPriceInput = document.getElementById("totalPrice");
+    const amountPaymentInput = document.getElementById("amountPayment");
+    const balanceInput = document.getElementById("balance");
+    const paymentMethod = document.getElementById('paymentMethod');
+    const installmentSection = document.getElementById('installmentSection');
+    const numMonths = document.getElementById('numMonths');
+
+    let productPrice = 0; // Initialize product price
+
+    // Fetch categories and populate category select options
+    fetchCategories();
+
+    // Fetch products when a category is selected
+    categorySelect.addEventListener('change', async (event) => {
+        const selectedCategoryId = event.target.value; // Get the selected category ID
+        await fetchProductsByCategory(selectedCategoryId); // Fetch products for the selected category
+    });
+
+    productSelect.addEventListener('change', async function () {
+    const selectedProductId = this.value; // Get selected product ID
+    console.log("Selected Product ID:", selectedProductId); // Debugging
+
+    if (selectedProductId) {
+        try {
+            const response = await fetch(`/admin/api/products/${selectedProductId}`);
+            console.log(`Fetching product from URL: /admin/api/products/${selectedProductId}`);
+            
+            if (!response.ok) {
+                console.error(`Failed to fetch product. Status: ${response.status}`);
+                productPrice = 0;
+                updateTotalPrice();
+                return;
+            }
+
+            const product = await response.json();
+            console.log("Fetched product:", JSON.stringify(product, null, 2)); // Log the fetched product object
+
+            // Ensure product.Price is accessed correctly
+            if (product && typeof product.Price === 'number') {
+                productPrice = product.Price;
+                console.log("Product Price:", productPrice); // Log the product price
+                updateTotalPrice(); // Update total price based on current quantity
+            } else {
+                console.error('Product price is undefined or not a number.', product);
+                productPrice = 0;
+                updateTotalPrice();
+            }
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            productPrice = 0;
+            updateTotalPrice();
+        }
+    } else {
+        productPrice = 0;
+        updateTotalPrice();
+    }
+});
+
+
+
+
+    // Update total price based on quantity input
+    quantityInput.addEventListener("input", updateTotalPrice);
+
+    // Show or hide installment section based on payment method selection
+    paymentMethod.addEventListener('change', () => {
+        if (paymentMethod.value === 'Installment') {
+            installmentSection.style.display = 'block';
+            numMonths.required = true;
+        } else {
+            installmentSection.style.display = 'none';
+            numMonths.value = ''; // Reset installment months
+            numMonths.required = false;
+        }
+        updateBalance(); // Update balance as needed
+    });
+
+    // Update balance based on amount payment input
+    amountPaymentInput.addEventListener("input", updateBalance);
+
+    // Function to calculate and display total price
+    function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value) || 0; // Fallback to 0 if invalid
+        const totalPrice = productPrice * quantity; // Calculate total price
+        totalPriceInput.value = totalPrice.toFixed(2); // Display total price in modal
+        updateBalance(); // Update balance based on new total price
+    }
+
+    // Function to calculate and display balance
+    function updateBalance() {
+    const totalPrice = parseFloat(totalPriceInput.value) || 0;
+    const amountPaid = parseFloat(amountPaymentInput.value) || 0;
+    let balance = totalPrice - amountPaid;
+
+    if (paymentMethod.value === 'Installment') {
+        const months = parseInt(numMonths.value) || 1;
+        balance = balance / months;
+    }
+
+    balanceInput.value = balance >= 0 ? balance.toFixed(2) : "0.00";
+}
+
+
+    // Adding sales
+    document.getElementById("addSaleForm").addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        const formData = {
+            CusName: document.getElementById("cusName").value,
+            Date: document.getElementById("date").value,
+            CusAdd: document.getElementById("cusAdd").value,
+            CusContact: document.getElementById("cusContact").value,
+            ProductCategory: categorySelect.value,
+            ProductID: productSelect.value,
+            Quantity: quantityInput.value,
+            MethPay: paymentMethod.value,
+            NumMonths: numMonths.value || null,
+            AmountPayment: amountPaymentInput.value,
+            Balance: balanceInput.value
+        };
+
+        try {
+            const response = await fetch("/sales/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                alert("Sale added successfully!");
+                location.reload(); // Reload the page or update the UI
+            } else {
+                alert("Failed to add sale.");
+            }
+        } catch (error) {
+            console.error("Error adding sale:", error);
+        }
+    });
+});
+
+
+
+
+// Event listener for when the modal opens
+$('#addSaleModal').on('show.bs.modal', function () {
+    // Fetch categories when modal opens
+    fetchCategories();
+});
+
+
+
+
+
+
+        
+
+
+
+
+
+/nt.getElementById('editCusAdd').value = sale.CusAdd;
+            document.getElementById('editCusContact').value = sale.CusContact;
+            docume/EDITING SALE
+// Function to open and populate the edit sale modal
+// Edit Sale Function
+function openEditSaleModal(saleId) {
+    fetch(`/sales/${saleId}`)  // This should match the route in backend
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch sale data');
+            return response.json();
+        })
+        .then(sale => {
+            console.log('Sale data fetched:', sale); // Verify sale data in the console
+
+    
+            document.getElementById('editCusName').value = sale.CusName;
+            document.getElementById('editDate').value = sale.Date;
+            document.getElementById('editQuantity').value = sale.Quantity;
+            document.getElementById('editAmountPayment').value = sale.AmountPayment;
+            document.getElementById('editBalance').value = sale.Balance;
+            document.getElementById('editPaymentMethod').value = sale.MethPay;
+            document.getElementById('editNumMonths').value = sale.NumMonths;
+
+            editFetchCategories('editCategorySelect', sale.CategoryID);
+        })
+        .catch(error => {
+            console.error('Error fetching sale data:', error);
+            alert('Error loading sale details.');
+        });
+}
+
+
+// Fetch sale details by ID
+async function fetchSaleDetails(saleId) {
+    try {
+        const response = await fetch(`/sales/${saleId}`); // Adjust the route as necessary
+        if (!response.ok) throw new Error('Failed to fetch sale data');
+
+        const sale = await response.json();
+        console.log('Sale data fetched:', sale); // Verify sale data in the console
+
+        document.getElementById('editCusName').value = sale.CusName;
+        document.getElementById('editDate').value = sale.Date;
+        document.getElementById('editCusAdd').value = sale.CusAdd;
+        document.getElementById('editCusContact').value = sale.CusContact;
+        document.getElementById('editQuantity').value = sale.Quantity;
+        document.getElementById('editAmountPayment').value = sale.AmountPayment;
+        document.getElementById('editBalance').value = sale.Balance;
+        document.getElementById('editPaymentMethod').value = sale.MethPay;
+        document.getElementById('editNumMonths').value = sale.NumMonths;
+
+        editFetchCategories('editCategorySelect', sale.CategoryID);
+    } catch (error) {
+        console.error('Error fetching sale data:', error);
+        alert('Error loading sale details.');
+    }
+}
+
+// Fetch categories and set the selected category for editing sales
+async function editFetchCategories(selectElementId, selectedCategoryId = null) {
+    try {
+        const response = await fetch('/admin/api/categories');
+        if (!response.ok) throw new Error('Failed to fetch categories');
+
+        const categories = await response.json();
+        console.log('Fetched categories:', categories); // Log categories for debugging
+        const editCategorySelect = document.getElementById(selectElementId);
+        editCategorySelect.innerHTML = '<option value="" disabled>Select a Category</option>';
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category._id;
+            option.textContent = category.CategoryName;
+
+            if (selectedCategoryId && category.CategoryID === selectedCategoryId) {
+                option.selected = true;
+            }
+            editCategorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+    }
+}
+
+// Event listener for opening the Edit Sale modal
+document.querySelectorAll('.edit-sale-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const saleId = button.getAttribute('data-sale-id');
+        console.log('Opening edit modal for sale ID:', saleId); // Log sale ID for debugging
+        openEditSaleModal(saleId); // Fetch and populate the sale details
+    });
+});
+
+// Update sale data
+document.getElementById('updateSaleBtn').addEventListener('click', function() {
+    const updatedSale = {
+        CusName: document.getElementById('editCusName').value,
+        Date: document.getElementById('editDate').value,
+        CusAdd: document.getElementById('editCusAdd').value,
+        CusContact: document.getElementById('editCusContact').value,
+        ProductCategory: document.getElementById('editCategorySelect').value,
+        Quantity: parseInt(document.getElementById('editQuantity').value, 10),
+        MethPay: document.getElementById('editPaymentMethod').value,
+        NumMonths: document.getElementById('editNumMonths').value || null,
+        AmountPayment: parseFloat(document.getElementById('editAmountPayment').value),
+        Balance: parseFloat(document.getElementById('editBalance').value)
+    };
+
+    // Check if ProductCategory is valid before sending
+    if (!updatedSale.CategoryID) {
+        console.error('ProductCategory is not valid.');
+        return;
+    }
+
+    // Send a PUT request to update the sale
+    fetch(`/sales/update/${saleId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedSale),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Sale updated successfully:', data); // Log the successful update
+        location.reload(); // Refresh the page or update the UI accordingly
+    })
+    .catch(error => {
+        console.error('Error updating sale:', error);
+    });
+});
+
+
+
+//SEARCH
+// Function to filter table rows based on input
+function filterTable() {
+            let searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+            let tableRows = document.querySelectorAll('#salesTableBody tr');
+
+            tableRows.forEach(function(row) {
+                let productName = row.querySelector('.product-name').textContent.toLowerCase();
+                let categoryName = row.querySelector('.customer-name').textContent.toLowerCase();
+                let productId = row.querySelector('.product-id').textContent.toLowerCase();
+                
+                if (searchInput === "") {
+                    row.style.display = ''; // Show all rows if input is empty
+                } else {
+                    // Check if any column text includes the search term
+                    if (productName.includes(searchInput) || categoryName.includes(searchInput) || productId.includes(searchInput)) {
+                        row.style.display = ''; // Show row if it matches
+                    } else {
+                        row.style.display = 'none'; // Hide row if it doesn't match
+                    }
+                }
+            });
+        }
+
+// Event listeners for search button and dynamic typing
+document.getElementById('searchBtn').addEventListener('click', filterTable);
+document.querySelector('.search-bar input').addEventListener('keyup', filterTable);
+
+
+
+// Function to confirm deletion of a sale
+function confirmDeleteSale(saleID) {
+    // Show a confirmation dialog
+    if (confirm("Are you sure you want to delete this sale?")) {
+        deleteSale(saleID);
+    }
+}
+
+// Function to delete a sale
+function deleteSale(saleID) {
+    // Make an AJAX request to delete the sale
+    fetch(`/sales/${saleID}`, {
+        method: 'DELETE', // Specify the method
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Successfully deleted
+            alert("Sale deleted successfully.");
+            // Remove the row from the table
+            document.querySelector(`tr[data-id="${saleID}"]`).remove();
+        } else {
+            // Handle errors
+            alert("Failed to delete the sale. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred. Please try again.");
+    });
+}
+
+
+
+
+
+
+
+
+    </script>
+    
+    
+</body>
+
+</html>
