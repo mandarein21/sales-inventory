@@ -446,7 +446,7 @@ app.post('/add-product', async (req, res) => {
 
 
 
-//SALES
+
 
 app.post('/sales/add', async (req, res) => {
     const {
@@ -512,12 +512,13 @@ app.get('/sales/:saleId', async (req, res) => {
 
 
 app.put('/sales/:saleId', async (req, res) => {
-    const saleId = req.params.saleId; // Accessing the saleId from the URL
-    const updatedData = req.body; // The data to be updated
-
+    console.log('Incoming request body:', req.body); // Log the incoming request body
     try {
+        const saleId = parseInt(req.params.saleId);
+        const updatedData = req.body;
+
         const updatedSale = await Sale.findOneAndUpdate(
-            { SaleID: saleId }, // Ensure SaleID is correctly matched
+            { SaleID: saleId },
             updatedData,
             { new: true, runValidators: true }
         );
@@ -532,30 +533,6 @@ app.put('/sales/:saleId', async (req, res) => {
         res.status(500).json({ message: 'Error updating sale' });
     }
 });
-
-
-
-app.delete('/sales/:saleId', async (req, res) => {
-    try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
-
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
-        }
-
-        res.json({ success: true, message: 'Sale deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-
-
-
-
-
 
 
 

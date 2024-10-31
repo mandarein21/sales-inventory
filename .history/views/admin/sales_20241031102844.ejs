@@ -70,10 +70,10 @@
                     <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
                     <td class="customer-address"><%= sale.CusAdd %></td>
                     <td class="contact-number"><%= sale.CusContact %></td>
-                    <td class="product-id"><%= sale.ProductID %></td>
+                    <td class="product-id"><%= sale.ProductID %></td> <!-- Assuming ProductID is a Number -->
                     <td class="product-name"><%= sale.ProductName %></td>
                     <td class="quantity"><%= sale.Quantity %></td>
-                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td>
+                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td> <!-- Use TotalPrice directly from the database -->
                     <td class="payment-method"><%= sale.MethPay %></td>
                     <td class="installment-months"><%= sale.NumMonths !== null ? sale.NumMonths : 'N/A' %></td>
                     <td class="amount-paid"><%= sale.AmountPayment.toFixed(2) %></td>
@@ -82,6 +82,7 @@
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSaleModal" onclick="openEditSaleModal('<%= sale.SaleID %>')" title="Edit Sale">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
+                        
                         <button class="btn btn-danger btn-sm" onclick="confirmDeleteSale('<%= sale.SaleID %>')" title="Delete Sale">
                             <i class="bi bi-trash-fill"></i>
                         </button>
@@ -89,7 +90,6 @@
                 </tr>
                 <% }); %>
             </tbody>
-            
         </table>
         
         
@@ -557,7 +557,7 @@ function openEditSaleModal(saleId) {
 
             // Populate the form fields
             document.getElementById('editCusName').value = sale.CusName;
-            document.getElementById('editDate').value = formatDateForInput(sale.Date); // Format the date
+            document.getElementById('editDate').value = sale.Date;
             document.getElementById('editCusAdd').value = sale.CusAdd;
             document.getElementById('editCusContact').value = sale.CusContact;
             document.getElementById('editQuantity').value = sale.Quantity;
@@ -568,54 +568,13 @@ function openEditSaleModal(saleId) {
 
             // Fetch categories and set the selected category
             editFetchCategories('editCategorySelect', sale.CategoryID);
-
-            // Fetch products for the selected category and set the selected product
-            editSalesDetails('editProductSelect', sale.CategoryID, sale.ProductID);
+            editSaless('editProductSelect', sale.CategoryID);
         })
         .catch(error => {
             console.error('Error fetching sale data:', error);
             alert('Error loading sale details.');
         });
 }
-
-
-// Function to format the date to yyyy-MM-dd
-function formatDateForInput(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; // Return in yyyy-MM-dd format
-}
-
-// Fetch products based on category and set the selected product
-async function editSalesDetails(selectElementId, categoryId, saleProductId) {
-    try {
-        const response = await fetch(`/admin/api/products?categoryId=${categoryId}`); // Adjust API route as necessary
-        if (!response.ok) throw new Error('Failed to fetch products');
-
-        const products = await response.json();
-        console.log('Fetched products:', products); // Log products for debugging
-        const editProductSelect = document.getElementById(selectElementId);
-        editProductSelect.innerHTML = '<option value="" disabled>Select a Product</option>'; // Clear previous options
-
-        products.forEach(product => {
-            const option = document.createElement('option');
-            option.value = product.ProductID; // Ensure this matches your schema
-            option.textContent = product.ProductName;
-
-            // Set the selected option based on the sale data
-            if (product.ProductID === saleProductId) {
-                option.selected = true; // Match with the product ID from the sale data
-            }
-
-            editProductSelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error fetching products:', error);
-    }
-}
-
 
 
 
@@ -682,11 +641,10 @@ document.querySelectorAll('.edit-sale-btn').forEach(button => {
 });
 
 // Update sale data
-// Update sale data
 document.getElementById('updateSaleBtn').addEventListener('click', function() {
     const updatedSale = {
         CusName: document.getElementById('editCusName').value,
-        Date: formatDateForInput(document.getElementById('editDate').value), // Format date here
+        Date: document.getElementById('editDate').value,
         CusAdd: document.getElementById('editCusAdd').value,
         CusContact: document.getElementById('editCusContact').value,
         ProductCategory: document.getElementById('editCategorySelect').value,
@@ -694,16 +652,17 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
         MethPay: document.getElementById('editPaymentMethod').value,
         NumMonths: document.getElementById('editNumMonths').value || null,
         AmountPayment: parseFloat(document.getElementById('editAmountPayment').value),
-        Balance: parseFloat(document.getElementById('editBalance').value),
+        Balance: parseFloat(document.getElementById('editBalance').value)
     };
 
-    console.log('Updated Sale:', updatedSale); // Log for debugging
-
-    // Check if saleId is in scope
-    const saleId = getSaleId(); // You need to implement this function to get the correct saleId
+    // Check if ProductCategory is valid before sending
+    if (!updatedSale.CategoryID) {
+        console.error('ProductCategory is not valid.');
+        return;
+    }
 
     // Send a PUT request to update the sale
-    fetch(`/sales/${saleId}`, { // Make sure saleId is correctly set
+    fetch(`/sales/update/${saleId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -711,23 +670,19 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
         body: JSON.stringify(updatedSale),
     })
     .then(response => {
-        console.log('Response status:', response.status); // Log the response status
         if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Sale updated successfully:', data);
-        alert('Sale updated successfully!'); // Notify the user
+        console.log('Sale updated successfully:', data); // Log the successful update
         location.reload(); // Refresh the page or update the UI accordingly
     })
     .catch(error => {
         console.error('Error updating sale:', error);
-        alert('Error updating sale. Please try again.'); // Notify the user of the error
     });
 });
-
 
 
 
@@ -765,36 +720,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-//DELETE FUNCTION
-function confirmDeleteSale(saleId) {
-    if (confirm('Are you sure you want to delete Sale ID: ' + saleId + '?')) {
-        deleteSale(saleId);
+
+// Function to confirm deletion of a sale
+function confirmDeleteSale(saleID) {
+    // Show a confirmation dialog
+    if (confirm("Are you sure you want to delete this sale?")) {
+        deleteSale(saleID);
     }
 }
 
-function deleteSale(saleId) {
-    console.log('Deleting Sale ID:', saleId); // Debugging log
-    fetch(`/sales/${saleId}`, {
-        method: 'DELETE'
+// Function to delete a sale
+function deleteSale(saleID) {
+    // Make an AJAX request to delete the sale
+    fetch(`/sales/${saleID}`, {
+        method: 'DELETE', // Specify the method
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to delete the sale');
+        if (response.ok) {
+            // Successfully deleted
+            alert("Sale deleted successfully.");
+            // Remove the row from the table
+            document.querySelector(`tr[data-id="${saleID}"]`).remove();
+        } else {
+            // Handle errors
+            alert("Failed to delete the sale. Please try again.");
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.message); // Successful deletion message
-        // Refresh or update the sales table here
     })
     .catch(error => {
-        console.error(error.message); // Log any errors
+        console.error('Error:', error);
+        alert("An error occurred. Please try again.");
     });
 }
-
-
-
-
 
 
 

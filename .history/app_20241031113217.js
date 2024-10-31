@@ -536,21 +536,34 @@ app.put('/sales/:saleId', async (req, res) => {
 
 
 app.delete('/sales/:saleId', async (req, res) => {
+    const saleId = req.params.saleId;
+    console.log('Received Sale ID:', saleId); // Log received Sale ID
+
+    // Check that saleId is a number
+    const saleIdInt = parseInt(saleId, 10);
+    console.log('Parsed Sale ID:', saleIdInt); // Log parsed Sale ID
+
+    if (isNaN(saleIdInt)) {
+        return res.status(400).json({ message: 'Invalid Sale ID format' });
+    }
+
     try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
+        // Check if SaleID exists in the database
+        const saleToDelete = await Sale.findOne({ SaleID: saleIdInt });
 
         if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
+            return res.status(404).json({ message: 'Sale not found' });
         }
 
-        res.json({ success: true, message: 'Sale deleted successfully' });
+        // Now delete using the _id
+        await Sale.deleteOne({ _id: saleToDelete._id });
+
+        res.status(200).json({ message: 'Sale deleted successfully' });
     } catch (error) {
         console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ message: 'Failed to delete the sale' });
     }
 });
-
 
 
 

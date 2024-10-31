@@ -766,33 +766,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 //DELETE FUNCTION
-function confirmDeleteSale(saleId) {
-    if (confirm('Are you sure you want to delete Sale ID: ' + saleId + '?')) {
-        deleteSale(saleId);
+function confirmDeleteSale(saleID) {
+    console.log("Trying to delete Sale ID:", saleID);
+    if (confirm("Are you sure you want to delete this sale?")) {
+        deleteSale(saleID);
+    } else {
+        console.log("Deletion canceled.");
     }
 }
 
-function deleteSale(saleId) {
-    console.log('Deleting Sale ID:', saleId); // Debugging log
-    fetch(`/sales/${saleId}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to delete the sale');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.message); // Successful deletion message
-        // Refresh or update the sales table here
-    })
-    .catch(error => {
-        console.error(error.message); // Log any errors
-    });
+// Function to delete a sale
+function confirmDeleteSale(saleID) {
+    if (confirm("Are you sure you want to delete this sale?")) {
+        deleteSale(saleID);
+    } else {
+        console.log("Deletion canceled.");
+    }
 }
 
-
+// Function to delete a sale
+function deleteSale(saleID) {
+    fetch(`/sales/${saleID}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Sale deleted successfully.");
+            const row = document.querySelector(`tr[data-id="${saleID}"]`);
+            if (row) {
+                row.remove();
+            } else {
+                console.error('Row not found for SaleID:', saleID);
+            }
+        } else {
+            alert("Failed to delete the sale. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred. Please try again.");
+    });
+}
 
 
 

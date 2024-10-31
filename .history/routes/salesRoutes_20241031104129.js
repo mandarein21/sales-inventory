@@ -7,7 +7,8 @@ const Product = require('../models/Product'); // Adjust the path according to yo
 
 const { getSales } = require('../controllers/salesController'); 
 
-
+// Define your routes here
+router.get('/', salesController.getSales); // Example route
 // Define the GET route for fetching sales
 router.get('/sales', getSales);
 
@@ -147,7 +148,8 @@ router.get('/api/products', async (req, res) => {
 
 
 
-
+// Route for managing sales
+router.get('/', salesController.getSales); // Fetch all sales
 router.post('/', salesController.addSale); // Add a new sale
 router.delete('/:id', salesController.deleteSale); // Delete a sale
 

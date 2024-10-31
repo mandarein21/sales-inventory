@@ -446,7 +446,7 @@ app.post('/add-product', async (req, res) => {
 
 
 
-//SALES
+
 
 app.post('/sales/add', async (req, res) => {
     const {
@@ -496,66 +496,8 @@ app.post('/sales/add', async (req, res) => {
     }
 });
 
-app.get('/sales/:saleId', async (req, res) => {
-    try {
-        const saleId = parseInt(req.params.saleId); // Ensure saleId is an integer
-        const sale = await Sale.findOne({ SaleID: saleId }); // Fetch using SaleID
-        if (!sale) {
-            return res.status(404).json({ message: 'Sale not found' });
-        }
-        res.json(sale); // Return the fetched sale data
-    } catch (error) {
-        console.error('Error fetching sale data:', error);
-        res.status(500).json({ message: 'Error fetching sale data' });
-    }
-});
-
-
-app.put('/sales/:saleId', async (req, res) => {
-    const saleId = req.params.saleId; // Accessing the saleId from the URL
-    const updatedData = req.body; // The data to be updated
-
-    try {
-        const updatedSale = await Sale.findOneAndUpdate(
-            { SaleID: saleId }, // Ensure SaleID is correctly matched
-            updatedData,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedSale) {
-            return res.status(404).json({ message: 'Sale not found' });
-        }
-
-        res.json(updatedSale);
-    } catch (error) {
-        console.error('Error updating sale:', error);
-        res.status(500).json({ message: 'Error updating sale' });
-    }
-});
-
-
-
-app.delete('/sales/:saleId', async (req, res) => {
-    try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
-
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
-        }
-
-        res.json({ success: true, message: 'Sale deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-
-
-
-
-
+sales:963 Error fetching sale data: Failed to fetch sale data
+(anonymous)	@	sales:963
 
 
 

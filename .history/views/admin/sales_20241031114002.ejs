@@ -774,7 +774,7 @@ function confirmDeleteSale(saleId) {
 
 function deleteSale(saleId) {
     console.log('Deleting Sale ID:', saleId); // Debugging log
-    fetch(`/sales/${saleId}`, {
+    fetch(`http://localhost:3000/sales/${saleId}`, {
         method: 'DELETE'
     })
     .then(response => {
@@ -791,7 +791,6 @@ function deleteSale(saleId) {
         console.error(error.message); // Log any errors
     });
 }
-
 
 
 

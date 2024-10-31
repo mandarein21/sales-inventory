@@ -446,7 +446,7 @@ app.post('/add-product', async (req, res) => {
 
 
 
-//SALES
+
 
 app.post('/sales/add', async (req, res) => {
     const {
@@ -498,12 +498,14 @@ app.post('/sales/add', async (req, res) => {
 
 app.get('/sales/:saleId', async (req, res) => {
     try {
-        const saleId = parseInt(req.params.saleId); // Ensure saleId is an integer
-        const sale = await Sale.findOne({ SaleID: saleId }); // Fetch using SaleID
+        const saleId = parseInt(req.params.saleId); // Ensure you parse the SaleID correctly
+        const sale = await Sale.findOne({ SaleID: saleId }).populate('ProductID'); // Populate ProductID
+
         if (!sale) {
             return res.status(404).json({ message: 'Sale not found' });
         }
-        res.json(sale); // Return the fetched sale data
+
+        res.json(sale); // Return the sale with populated product data
     } catch (error) {
         console.error('Error fetching sale data:', error);
         res.status(500).json({ message: 'Error fetching sale data' });
@@ -511,51 +513,28 @@ app.get('/sales/:saleId', async (req, res) => {
 });
 
 
-app.put('/sales/:saleId', async (req, res) => {
-    const saleId = req.params.saleId; // Accessing the saleId from the URL
-    const updatedData = req.body; // The data to be updated
 
+app.put('/sales/:saleId', async (req, res) => {
     try {
+        const saleId = parseInt(req.params.saleId);
+        const updatedData = req.body; // Ensure your request body has the updated sale data
+
         const updatedSale = await Sale.findOneAndUpdate(
-            { SaleID: saleId }, // Ensure SaleID is correctly matched
+            { SaleID: saleId },
             updatedData,
-            { new: true, runValidators: true }
+            { new: true, runValidators: true } // Options to return the updated document and run validators
         );
 
         if (!updatedSale) {
             return res.status(404).json({ message: 'Sale not found' });
         }
 
-        res.json(updatedSale);
+        res.json(updatedSale); // Return the updated sale
     } catch (error) {
         console.error('Error updating sale:', error);
         res.status(500).json({ message: 'Error updating sale' });
     }
 });
-
-
-
-app.delete('/sales/:saleId', async (req, res) => {
-    try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
-
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
-        }
-
-        res.json({ success: true, message: 'Sale deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-
-
-
-
-
 
 
 

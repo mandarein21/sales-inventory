@@ -535,29 +535,6 @@ app.put('/sales/:saleId', async (req, res) => {
 
 
 
-app.delete('/sales/:saleId', async (req, res) => {
-    try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
-
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
-        }
-
-        res.json({ success: true, message: 'Sale deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-
-
-
-
-
-
-
 
 
 app.get('/', (req, res) => {

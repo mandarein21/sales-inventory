@@ -147,7 +147,8 @@ router.get('/api/products', async (req, res) => {
 
 
 
-
+// Route for managing sales
+router.get('/', salesController.getSales); // Fetch all sales
 router.post('/', salesController.addSale); // Add a new sale
 router.delete('/:id', salesController.deleteSale); // Delete a sale
 

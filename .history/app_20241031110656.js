@@ -536,26 +536,23 @@ app.put('/sales/:saleId', async (req, res) => {
 
 
 app.delete('/sales/:saleId', async (req, res) => {
+    console.log('Received sale ID:', req.params.saleId); // Log the received ID
     try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
+        // Convert the saleId from the request parameter to ObjectId
+        const saleID = mongoose.Types.ObjectId(req.params.saleId); 
+        const deletedSale = await Sale.findByIdAndDelete(saleID);
 
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
+        // Check if a sale was found and deleted
+        if (!deletedSale) {
+            return res.status(404).json({ message: 'Sale not found' });
         }
 
-        res.json({ success: true, message: 'Sale deleted successfully' });
+        res.status(200).json({ message: 'Sale deleted successfully' });
     } catch (error) {
         console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ message: 'Failed to delete the sale' });
     }
 });
-
-
-
-
-
-
 
 
 

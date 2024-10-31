@@ -536,25 +536,30 @@ app.put('/sales/:saleId', async (req, res) => {
 
 
 app.delete('/sales/:saleId', async (req, res) => {
-    try {
-        // Find the sale by SaleID and delete by its _id field
-        const saleToDelete = await Sale.findOneAndDelete({ SaleID: req.params.saleId });
+    const saleId = req.params.saleId;
 
-        if (!saleToDelete) {
-            return res.status(404).json({ success: false, message: 'Sale not found' });
+    try {
+        // Check if saleId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(saleId)) {
+            return res.status(400).json({ message: 'Invalid Sale ID format' });
         }
 
-        res.json({ success: true, message: 'Sale deleted successfully' });
+        // Find the sale using the ObjectId
+        const saleToDelete = await Sale.findById(saleId);
+
+        if (!saleToDelete) {
+            return res.status(404).json({ message: 'Sale not found' });
+        }
+
+        // Now delete using the _id
+        await Sale.deleteOne({ _id: saleToDelete._id });
+
+        res.status(200).json({ message: 'Sale deleted successfully' });
     } catch (error) {
         console.error('Error deleting sale:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ message: 'Failed to delete the sale' });
     }
 });
-
-
-
-
-
 
 
 

@@ -70,10 +70,10 @@
                     <td><%= sale.Date instanceof Date ? sale.Date.toLocaleDateString() : 'Invalid Date' %></td>
                     <td class="customer-address"><%= sale.CusAdd %></td>
                     <td class="contact-number"><%= sale.CusContact %></td>
-                    <td class="product-id"><%= sale.ProductID %></td>
+                    <td class="product-id"><%= sale.ProductID %></td> <!-- Assuming ProductID is a Number -->
                     <td class="product-name"><%= sale.ProductName %></td>
                     <td class="quantity"><%= sale.Quantity %></td>
-                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td>
+                    <td class="total-price"><%= sale.TotalPrice.toFixed(2) %></td> <!-- Use TotalPrice directly from the database -->
                     <td class="payment-method"><%= sale.MethPay %></td>
                     <td class="installment-months"><%= sale.NumMonths !== null ? sale.NumMonths : 'N/A' %></td>
                     <td class="amount-paid"><%= sale.AmountPayment.toFixed(2) %></td>
@@ -82,14 +82,15 @@
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSaleModal" onclick="openEditSaleModal('<%= sale.SaleID %>')" title="Edit Sale">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
+                        
                         <button class="btn btn-danger btn-sm" onclick="confirmDeleteSale('<%= sale.SaleID %>')" title="Delete Sale">
                             <i class="bi bi-trash-fill"></i>
                         </button>
+                        
                     </td>
                 </tr>
                 <% }); %>
             </tbody>
-            
         </table>
         
         
@@ -766,33 +767,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 //DELETE FUNCTION
-function confirmDeleteSale(saleId) {
-    if (confirm('Are you sure you want to delete Sale ID: ' + saleId + '?')) {
-        deleteSale(saleId);
-    }
-}
+app.delete('/sales/:saleId', async (req, res) => {
+    const saleId = req.params.saleId;
 
-function deleteSale(saleId) {
-    console.log('Deleting Sale ID:', saleId); // Debugging log
-    fetch(`/sales/${saleId}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to delete the sale');
+    try {
+        // Check if saleId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(saleId)) {
+            return res.status(400).json({ message: 'Invalid Sale ID format' });
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.message); // Successful deletion message
-        // Refresh or update the sales table here
-    })
-    .catch(error => {
-        console.error(error.message); // Log any errors
-    });
-}
 
+        // Find the sale using the ObjectId
+        const saleToDelete = await Sale.findById(saleId);
 
+        if (!saleToDelete) {
+            return res.status(404).json({ message: 'Sale not found' });
+        }
+
+        // Now delete using the _id
+        await Sale.deleteOne({ _id: saleToDelete._id });
+
+        res.status(200).json({ message: 'Sale deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting sale:', error);
+        res.status(500).json({ message: 'Failed to delete the sale' });
+    }
+});
 
 
 

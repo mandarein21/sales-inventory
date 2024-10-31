@@ -94,16 +94,18 @@ const addSale = async (req, res) => {
 
 
 // Delete Sale
+// Delete Sale
 const deleteSale = async (req, res) => {
     try {
-        const saleId = req.params.saleId;
+        const saleId = req.params.saleId; // Use 'saleId' to match your route
 
-        // Validate ObjectId format
+        // Check if the saleId is a valid ObjectId
         if (!mongoose.Types.ObjectId.isValid(saleId)) {
-            return res.status(400).send({ message: 'Invalid Sale ID format' });
+            return res.status(400).send({ message: 'Invalid Sale ID' });
         }
 
-        const sale = await Sale.findById(saleId);
+        // Attempt to delete the sale
+        const sale = await Sale.findById(saleId); // Use saleId to find the sale
         if (!sale) {
             return res.status(404).send({ message: 'Sale not found' });
         }

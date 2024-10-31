@@ -767,30 +767,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //DELETE FUNCTION
 function confirmDeleteSale(saleId) {
-    if (confirm('Are you sure you want to delete Sale ID: ' + saleId + '?')) {
-        deleteSale(saleId);
+    if (confirm('Are you sure you want to delete this sale?')) {
+        fetch(`http://localhost:3000/sales/${saleId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete the sale');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message); // Success message
+            // Optionally refresh the table or remove the deleted sale from the UI
+        })
+        .catch(error => {
+            console.error(error.message);
+            alert('Error: ' + error.message);
+        });
     }
 }
 
-function deleteSale(saleId) {
-    console.log('Deleting Sale ID:', saleId); // Debugging log
-    fetch(`/sales/${saleId}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to delete the sale');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.message); // Successful deletion message
-        // Refresh or update the sales table here
-    })
-    .catch(error => {
-        console.error(error.message); // Log any errors
-    });
-}
+
 
 
 
