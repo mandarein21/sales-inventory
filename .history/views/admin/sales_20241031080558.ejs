@@ -36,7 +36,24 @@
                 </div>
             </div>
     
-            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
     
@@ -685,36 +702,32 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
 
 // SEARCH FUNCTION
 // Function to filter table rows based on input
-// SEARCH FUNCTION
 function filterTable() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
     const tableRows = document.querySelectorAll('#salesTableBody tr');
 
     tableRows.forEach((row) => {
-        const rowText = row.textContent.toLowerCase(); // Get all text content in row
-        if (rowText.includes(searchInput)) {
+        // Select the relevant fields to search within each row
+        const customerName = row.querySelector('.customer-name').textContent.toLowerCase();
+        const productName = row.querySelector('.product-name').textContent.toLowerCase();
+        const productId = row.querySelector('.product-id').textContent.toLowerCase();
+
+        // Check if any of these fields contain the search term
+        if (
+            customerName.includes(searchInput) ||
+            productName.includes(searchInput) ||
+            productId.includes(searchInput)
+        ) {
             row.style.display = ''; // Show row if it matches
         } else {
-            row.style.display = 'none'; // Hide row if it doesn’t match
+            row.style.display = 'none'; // Hide row if it doesn't match
         }
     });
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        console.log("Search button clicked"); // Check if the search button click is detected
-        filterTable();
-    });
-
-    document.getElementById('searchInput').addEventListener('keyup', () => {
-        console.log("Keyup event detected"); // Check if the keyup event triggers
-        filterTable();
-    });
-});
-
-.
-
+// Add event listeners for search button and dynamic typing
+document.getElementById('searchBtn').addEventListener('click', filterTable);
+document.getElementById('searchInput').addEventListener('keyup', filterTable);
 
 
 

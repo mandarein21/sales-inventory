@@ -29,14 +29,29 @@
         <!-- Search Bar and Pagination -->
         <div class="d-flex justify-content-between align-items-center my-3">
             <!-- Search Bar -->
-            <div class="search-bar" style="max-width: 400px; width: 100%;">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter Customer name" aria-label="Sale Search" id="searchInput">
-                    <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
-                </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search sales..." id="searchInput">
+                <button id="searchBtn">Search</button>
             </div>
     
-            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
     
@@ -688,32 +703,31 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
 // SEARCH FUNCTION
 function filterTable() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const tableRows = document.querySelectorAll('#salesTableBody tr');
+    console.log("Search Term:", searchInput); // Log search term
 
+    const tableRows = document.querySelectorAll('#salesTableBody tr');
     tableRows.forEach((row) => {
-        const rowText = row.textContent.toLowerCase(); // Get all text content in row
-        if (rowText.includes(searchInput)) {
-            row.style.display = ''; // Show row if it matches
+        const productName = row.querySelector('.product-name').textContent.toLowerCase();
+        const customerName = row.querySelector('.customer-name').textContent.toLowerCase();
+        const productId = row.querySelector('.product-id').textContent.toLowerCase();
+
+        console.log("Checking row with:", productName, customerName, productId); // Log content of each row
+
+        if (
+            productName.includes(searchInput) ||
+            customerName.includes(searchInput) ||
+            productId.includes(searchInput)
+        ) {
+            row.style.display = ''; // Show matching row
         } else {
-            row.style.display = 'none'; // Hide row if it doesn’t match
+            row.style.display = 'none'; // Hide non-matching row
         }
     });
 }
 
+document.getElementById('searchBtn').addEventListener('click', filterTable);
+document.getElementById('searchInput').addEventListener('keyup', filterTable);
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        console.log("Search button clicked"); // Check if the search button click is detected
-        filterTable();
-    });
-
-    document.getElementById('searchInput').addEventListener('keyup', () => {
-        console.log("Keyup event detected"); // Check if the keyup event triggers
-        filterTable();
-    });
-});
-
-.
 
 
 

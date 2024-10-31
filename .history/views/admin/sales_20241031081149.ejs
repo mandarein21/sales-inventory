@@ -29,14 +29,29 @@
         <!-- Search Bar and Pagination -->
         <div class="d-flex justify-content-between align-items-center my-3">
             <!-- Search Bar -->
-            <div class="search-bar" style="max-width: 400px; width: 100%;">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter Customer name" aria-label="Sale Search" id="searchInput">
-                    <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
-                </div>
-            </div>
+            <div class="search-bar">
+    <input type="text" placeholder="Search sales..." id="searchInput">
+    <button id="searchBtn">Search</button>
+</div>
     
-            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
     
@@ -687,33 +702,35 @@ document.getElementById('updateSaleBtn').addEventListener('click', function() {
 // Function to filter table rows based on input
 // SEARCH FUNCTION
 function filterTable() {
+    // Capture the search term in lowercase
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    
+    // Get all rows within the sales table body
     const tableRows = document.querySelectorAll('#salesTableBody tr');
-
+    
+    // Loop over each row to apply the filter
     tableRows.forEach((row) => {
-        const rowText = row.textContent.toLowerCase(); // Get all text content in row
-        if (rowText.includes(searchInput)) {
+        // Retrieve text content of each searchable column in lowercase
+        const productName = row.querySelector('.product-name').textContent.toLowerCase();
+        const customerName = row.querySelector('.customer-name').textContent.toLowerCase();
+        const productId = row.querySelector('.product-id').textContent.toLowerCase();
+
+        // Check if any of these fields contain the search term
+        if (
+            productName.includes(searchInput) ||
+            customerName.includes(searchInput) ||
+            productId.includes(searchInput)
+        ) {
             row.style.display = ''; // Show row if it matches
         } else {
-            row.style.display = 'none'; // Hide row if it doesn’t match
+            row.style.display = 'none'; // Hide row if it doesn't match
         }
     });
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        console.log("Search button clicked"); // Check if the search button click is detected
-        filterTable();
-    });
-
-    document.getElementById('searchInput').addEventListener('keyup', () => {
-        console.log("Keyup event detected"); // Check if the keyup event triggers
-        filterTable();
-    });
-});
-
-.
+// Event listeners for search button and dynamic typing
+document.getElementById('searchBtn').addEventListener('click', filterTable);
+document.getElementById('searchInput').addEventListener('keyup', filterTable);
 
 
 
